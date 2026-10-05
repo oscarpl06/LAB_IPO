@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 
 namespace LAB_IPO // hola
 {
+    //no funciona
     /// <summary>
     /// Lógica de interacción para MainWindow.xaml
     /// </summary>
