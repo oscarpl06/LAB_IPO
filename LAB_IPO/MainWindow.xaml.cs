@@ -15,6 +15,15 @@ using System.Windows.Shapes;
 
 namespace LAB_IPO // hola
 {
+    //hola que tal
+    //esto es la prueba 2
+    abstract class Persona
+    {
+        public string Nombre { get; set; }
+        public string Apellido { get; set; }
+        public int Edad { get; set; }
+        public abstract void Saludar();
+    }
     /// <summary>
     /// Lógica de interacción para MainWindow.xaml
     /// </summary>
