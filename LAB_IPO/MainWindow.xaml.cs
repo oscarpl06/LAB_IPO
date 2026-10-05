@@ -13,9 +13,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace LAB_IPO // hola
+namespace LAB_IPO
 {
-    //no funciona
     /// <summary>
     /// Lógica de interacción para MainWindow.xaml
     /// </summary>
