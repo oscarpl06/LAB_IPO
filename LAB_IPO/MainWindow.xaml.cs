@@ -15,7 +15,6 @@ using System.Windows.Shapes;
 
 namespace LAB_IPO // hola
 {
- //mis muertos
     /// <summary>
     /// Lógica de interacción para MainWindow.xaml
     /// </summary>
