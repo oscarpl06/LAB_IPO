@@ -1,0 +1,12 @@
+<comp:VistaBase x:Class="LAB_IPO.Vistas.Paginas.InicioVista"
+                xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                xmlns:comp="clr-namespace:LAB_IPO.Componentes">
+
+    <!-- PG2 · Inicio. El resumen del día llegará con los casos de uso de reservas. -->
+    <StackPanel>
+        <TextBlock Text="Inicio" Style="{StaticResource Texto.TituloSeccion}"/>
+        <TextBlock x:Name="TxtBienvenida" Style="{StaticResource Texto.Secundario}" Margin="0,6,0,0"/>
+        <Border Style="{StaticResource Separador}" Margin="0,14,0,0"/>
+    </StackPanel>
+</comp:VistaBase>
