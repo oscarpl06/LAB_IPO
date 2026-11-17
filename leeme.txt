@@ -1,0 +1,12 @@
+CAMPING TIMOTEO - Gestión del camping
+Prácticas de Interacción Persona-Ordenador I · Curso 2026/2027
+
+Integrantes del grupo
+- Óscar Puebla López
+- Carlos López Martín
+
+Datos de acceso para probar la aplicación
+- Usuario: federico.g    Clave: timoteo2026
+- Usuario: marta.g       Clave: camping2026
+
+La identificación no distingue mayúsculas; la clave sí.
