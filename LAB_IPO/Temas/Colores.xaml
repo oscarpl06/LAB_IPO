@@ -1,0 +1,95 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!--
+        Paleta "Nature Premium" de Camping Timoteo.
+        Verde bosque como color de marca, salvia como acento suave,
+        y una base cálida de arena, beige y blanco roto.
+    -->
+
+    <!-- Verde bosque -->
+    <Color x:Key="Color.Bosque900">#16301F</Color>
+    <Color x:Key="Color.Bosque800">#1F3D2B</Color>
+    <Color x:Key="Color.Bosque700">#2B5239</Color>
+    <Color x:Key="Color.Bosque600">#356547</Color>
+    <Color x:Key="Color.Bosque500">#437A57</Color>
+
+    <!-- Verde salvia -->
+    <Color x:Key="Color.Salvia500">#8EA88F</Color>
+    <Color x:Key="Color.Salvia200">#D4E0D3</Color>
+    <Color x:Key="Color.Salvia100">#E8EFE6</Color>
+
+    <!-- Arena, beige y blanco cálido -->
+    <Color x:Key="Color.Arena400">#D9C9AC</Color>
+    <Color x:Key="Color.Arena300">#E7DCC6</Color>
+    <Color x:Key="Color.Arena200">#F1E9DA</Color>
+    <Color x:Key="Color.Beige100">#F7F2E8</Color>
+    <Color x:Key="Color.BlancoCalido">#FCFAF5</Color>
+    <Color x:Key="Color.Blanco">#FFFFFF</Color>
+
+    <!-- Texto -->
+    <Color x:Key="Color.TextoPrincipal">#1E2B23</Color>
+    <Color x:Key="Color.TextoSecundario">#59665D</Color>
+    <Color x:Key="Color.TextoTenue">#8A938B</Color>
+
+    <!-- Bordes -->
+    <Color x:Key="Color.Borde">#DED6C7</Color>
+    <Color x:Key="Color.BordeFuerte">#C7BBA5</Color>
+
+    <!-- Estados -->
+    <Color x:Key="Color.Error">#B4472E</Color>
+    <Color x:Key="Color.ErrorFondo">#FBEDE7</Color>
+    <Color x:Key="Color.Aviso">#B7791F</Color>
+    <Color x:Key="Color.AvisoFondo">#FBF1DE</Color>
+    <Color x:Key="Color.Info">#356547</Color>
+    <Color x:Key="Color.InfoFondo">#E8EFE6</Color>
+
+    <Color x:Key="Color.Sombra">#2B2418</Color>
+
+    <!-- Pinceles -->
+    <SolidColorBrush x:Key="Pincel.Bosque900" Color="{StaticResource Color.Bosque900}"/>
+    <SolidColorBrush x:Key="Pincel.Bosque800" Color="{StaticResource Color.Bosque800}"/>
+    <SolidColorBrush x:Key="Pincel.Bosque700" Color="{StaticResource Color.Bosque700}"/>
+    <SolidColorBrush x:Key="Pincel.Bosque600" Color="{StaticResource Color.Bosque600}"/>
+    <SolidColorBrush x:Key="Pincel.Bosque500" Color="{StaticResource Color.Bosque500}"/>
+
+    <SolidColorBrush x:Key="Pincel.Salvia500" Color="{StaticResource Color.Salvia500}"/>
+    <SolidColorBrush x:Key="Pincel.Salvia200" Color="{StaticResource Color.Salvia200}"/>
+    <SolidColorBrush x:Key="Pincel.Salvia100" Color="{StaticResource Color.Salvia100}"/>
+
+    <SolidColorBrush x:Key="Pincel.Arena400" Color="{StaticResource Color.Arena400}"/>
+    <SolidColorBrush x:Key="Pincel.Arena300" Color="{StaticResource Color.Arena300}"/>
+    <SolidColorBrush x:Key="Pincel.Arena200" Color="{StaticResource Color.Arena200}"/>
+    <SolidColorBrush x:Key="Pincel.Beige100" Color="{StaticResource Color.Beige100}"/>
+    <SolidColorBrush x:Key="Pincel.BlancoCalido" Color="{StaticResource Color.BlancoCalido}"/>
+    <SolidColorBrush x:Key="Pincel.Blanco" Color="{StaticResource Color.Blanco}"/>
+
+    <SolidColorBrush x:Key="Pincel.TextoPrincipal" Color="{StaticResource Color.TextoPrincipal}"/>
+    <SolidColorBrush x:Key="Pincel.TextoSecundario" Color="{StaticResource Color.TextoSecundario}"/>
+    <SolidColorBrush x:Key="Pincel.TextoTenue" Color="{StaticResource Color.TextoTenue}"/>
+
+    <SolidColorBrush x:Key="Pincel.Borde" Color="{StaticResource Color.Borde}"/>
+    <SolidColorBrush x:Key="Pincel.BordeFuerte" Color="{StaticResource Color.BordeFuerte}"/>
+
+    <SolidColorBrush x:Key="Pincel.Error" Color="{StaticResource Color.Error}"/>
+    <SolidColorBrush x:Key="Pincel.ErrorFondo" Color="{StaticResource Color.ErrorFondo}"/>
+    <SolidColorBrush x:Key="Pincel.Aviso" Color="{StaticResource Color.Aviso}"/>
+    <SolidColorBrush x:Key="Pincel.AvisoFondo" Color="{StaticResource Color.AvisoFondo}"/>
+    <SolidColorBrush x:Key="Pincel.Info" Color="{StaticResource Color.Info}"/>
+    <SolidColorBrush x:Key="Pincel.InfoFondo" Color="{StaticResource Color.InfoFondo}"/>
+
+    <!-- Fondo del panel de marca: arena con un degradado muy suave -->
+    <LinearGradientBrush x:Key="Pincel.PanelMarca" StartPoint="0,0" EndPoint="0.6,1">
+        <GradientStop Color="{StaticResource Color.Arena200}" Offset="0"/>
+        <GradientStop Color="{StaticResource Color.Arena300}" Offset="1"/>
+    </LinearGradientBrush>
+
+    <!-- Sombras suaves para tarjetas -->
+    <DropShadowEffect x:Key="Sombra.Tarjeta" Color="{StaticResource Color.Sombra}"
+                      BlurRadius="24" ShadowDepth="4" Direction="270" Opacity="0.08"/>
+    <DropShadowEffect x:Key="Sombra.Elevada" Color="{StaticResource Color.Sombra}"
+                      BlurRadius="40" ShadowDepth="10" Direction="270" Opacity="0.16"/>
+    <DropShadowEffect x:Key="Sombra.Boton" Color="{StaticResource Color.Bosque900}"
+                      BlurRadius="14" ShadowDepth="3" Direction="270" Opacity="0.22"/>
+
+</ResourceDictionary>
