@@ -11,6 +11,52 @@
     <BooleanToVisibilityConverter x:Key="BoolAVisibilidad"/>
 
     <!-- ============================================================
+         Campo de texto de varias líneas (descripciones, observaciones)
+         ============================================================ -->
+
+    <Style x:Key="Campo.TextoLargo" TargetType="TextBox" BasedOn="{StaticResource Campo.Texto}">
+        <Setter Property="Height" Value="Auto"/>
+        <Setter Property="MinHeight" Value="80"/>
+        <Setter Property="Padding" Value="12,10"/>
+        <Setter Property="AcceptsReturn" Value="True"/>
+        <Setter Property="TextWrapping" Value="Wrap"/>
+        <Setter Property="VerticalContentAlignment" Value="Top"/>
+        <Setter Property="VerticalScrollBarVisibility" Value="Auto"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="TextBox">
+                    <Border x:Name="Borde" CornerRadius="8" Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="1">
+                        <Grid>
+                            <TextBlock x:Name="Ejemplo" Text="{TemplateBinding comp:CampoAyudante.TextoEjemplo}"
+                                       Foreground="{StaticResource Pincel.TextoTenue}" IsHitTestVisible="False"
+                                       Margin="14,11,14,0" TextWrapping="Wrap" Visibility="Collapsed"/>
+                            <ScrollViewer x:Name="PART_ContentHost" Focusable="False"/>
+                        </Grid>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="Text" Value="">
+                            <Setter TargetName="Ejemplo" Property="Visibility" Value="Visible"/>
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Borde" Property="BorderBrush" Value="{StaticResource Pincel.BordeFuerte}"/>
+                        </Trigger>
+                        <Trigger Property="comp:CampoAyudante.TieneError" Value="True">
+                            <Setter TargetName="Borde" Property="BorderBrush" Value="{StaticResource Pincel.Error}"/>
+                            <Setter TargetName="Borde" Property="Background" Value="{StaticResource Pincel.ErrorFondo}"/>
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter TargetName="Borde" Property="BorderBrush" Value="{StaticResource Pincel.Bosque600}"/>
+                            <Setter TargetName="Borde" Property="BorderThickness" Value="2"/>
+                            <Setter TargetName="Borde" Property="Background" Value="{StaticResource Pincel.Blanco}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- ============================================================
          Desplegable (ComboBox)
          ============================================================ -->
 
