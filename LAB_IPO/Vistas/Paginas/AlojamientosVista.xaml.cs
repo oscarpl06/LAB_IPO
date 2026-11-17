@@ -157,30 +157,32 @@ namespace LAB_IPO.Vistas.Paginas
 
         // ===== Ficha de la parcela (CU-06) =====
 
+        // Parcela cuya ficha está abierta. La ficha solo se abre con el botón "Ver".
+        private Parcela _parcelaEnFicha;
+
         private void Ver_Click(object sender, RoutedEventArgs e)
         {
-            if ((sender as FrameworkElement)?.DataContext is Parcela parcela)
-                ListaParcelas.SelectedItem = parcela;
-        }
-
-        private void ListaParcelas_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (!(ListaParcelas.SelectedItem is Parcela parcela))
-            {
-                OcultarFicha();
-                return;
-            }
+            if (!((sender as FrameworkElement)?.DataContext is Parcela parcela)) return;
 
             if (!RepositorioAlojamientos.Parcelas.Contains(parcela))
             {
                 DialogoMensaje.Mostrar(VentanaPropietaria, "Parcela no disponible",
                     "La parcela seleccionada ya no existe. Actualiza el listado y vuelve a intentarlo.",
                     TipoDialogo.Aviso);
-                ListaParcelas.SelectedItem = null;
                 return;
             }
 
+            _parcelaEnFicha = parcela;
+            ListaParcelas.SelectedItem = parcela;   // resalta su fila
             MostrarFicha(parcela);
+        }
+
+        // Pulsar una fila o moverse con las flechas no abre la ficha:
+        // la fila resaltada es siempre la de la ficha abierta (o ninguna).
+        private void ListaParcelas_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!ReferenceEquals(ListaParcelas.SelectedItem, _parcelaEnFicha))
+                ListaParcelas.SelectedItem = _parcelaEnFicha;
         }
 
         private void MostrarFicha(Parcela parcela)
@@ -203,6 +205,7 @@ namespace LAB_IPO.Vistas.Paginas
 
         private void CerrarFicha()
         {
+            _parcelaEnFicha = null;
             ListaParcelas.SelectedItem = null;
             OcultarFicha();
         }
