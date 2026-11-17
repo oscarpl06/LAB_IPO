@@ -58,6 +58,22 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Temas\Formularios.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Vistas\Paginas\InicioVista.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Vistas\Paginas\AlojamientosVista.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Vistas\Paginas\FormularioParcelaVista.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Temas\Colores.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -110,6 +126,24 @@
       <DependentUpon>VentanaPrincipal.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Vistas\Paginas\InicioVista.xaml.cs">
+      <DependentUpon>InicioVista.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Vistas\Paginas\AlojamientosVista.xaml.cs">
+      <DependentUpon>AlojamientosVista.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Vistas\Paginas\FormularioParcelaVista.xaml.cs">
+      <DependentUpon>FormularioParcelaVista.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Componentes\RutaImagenConverter.cs" />
+    <Compile Include="Componentes\VistaBase.cs" />
+    <Compile Include="Datos\RepositorioAlojamientos.cs" />
+    <Compile Include="Modelos\EstadoAlojamiento.cs" />
+    <Compile Include="Modelos\Parcela.cs" />
+    <Compile Include="Modelos\TipoParcela.cs" />
     <Compile Include="Componentes\CampoAyudante.cs" />
     <Compile Include="Componentes\CampoClave.xaml.cs">
       <DependentUpon>CampoClave.xaml</DependentUpon>
@@ -151,6 +185,11 @@
     <Resource Include="Recursos\Imagenes\logo-texto.png" />
     <Resource Include="Recursos\Imagenes\logo-insignia.png" />
     <Resource Include="Recursos\app.ico" />
+    <Resource Include="Recursos\Fotos\Parcelas\parcela-p03.jpg" />
+    <Resource Include="Recursos\Fotos\Parcelas\parcela-p06.jpg" />
+    <Resource Include="Recursos\Fotos\Parcelas\parcela-p12.jpg" />
+    <Resource Include="Recursos\Fotos\Parcelas\parcela-p15.jpg" />
+    <Resource Include="Recursos\Fotos\Parcelas\parcela-p21.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

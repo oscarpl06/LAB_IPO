@@ -71,16 +71,18 @@
                         <TextBlock Text="MENÚ PRINCIPAL" Style="{StaticResource Texto.Rotulo}" Margin="4,0,0,0"/>
                         <Border Style="{StaticResource Separador}" Margin="0,10,0,12"/>
 
-                        <RadioButton Style="{StaticResource Boton.Menu}" GroupName="Menu" Content="Inicio"
-                                     IsChecked="True" ToolTip="Resumen del día en el camping"/>
+                        <RadioButton x:Name="MenuInicio" Style="{StaticResource Boton.Menu}" GroupName="Menu"
+                                     Content="Inicio" IsChecked="True" ToolTip="Resumen del día en el camping"
+                                     Checked="Menu_Checked" Click="Menu_Click"/>
                         <RadioButton Style="{StaticResource Boton.Menu}" GroupName="Menu" Content="Reservas"
                                      IsEnabled="False" ToolTip="Sección en desarrollo"/>
                         <RadioButton Style="{StaticResource Boton.Menu}" GroupName="Menu" Content="Personal"
                                      IsEnabled="False" ToolTip="Sección en desarrollo"/>
                         <RadioButton Style="{StaticResource Boton.Menu}" GroupName="Menu" Content="Actividades"
                                      IsEnabled="False" ToolTip="Sección en desarrollo"/>
-                        <RadioButton Style="{StaticResource Boton.Menu}" GroupName="Menu" Content="Alojamientos"
-                                     IsEnabled="False" ToolTip="Sección en desarrollo"/>
+                        <RadioButton x:Name="MenuAlojamientos" Style="{StaticResource Boton.Menu}" GroupName="Menu"
+                                     Content="Alojamientos" ToolTip="Parcelas y bungalows del complejo"
+                                     Checked="Menu_Checked" Click="Menu_Click"/>
                         <RadioButton Style="{StaticResource Boton.Menu}" GroupName="Menu" Content="Ayuda"
                                      IsEnabled="False" ToolTip="Sección en desarrollo"/>
                         <RadioButton Style="{StaticResource Boton.Menu}" GroupName="Menu" Content="Acerca de"
@@ -103,12 +105,8 @@
                 </DockPanel>
             </Border>
 
-            <!-- Contenido: Inicio -->
-            <StackPanel Grid.Column="2" Margin="0,2,4,0">
-                <TextBlock Text="Inicio" Style="{StaticResource Texto.TituloSeccion}"/>
-                <TextBlock x:Name="TxtBienvenida" Style="{StaticResource Texto.Secundario}" Margin="0,6,0,0"/>
-                <Border Style="{StaticResource Separador}" Margin="0,14,0,0"/>
-            </StackPanel>
+            <!-- Contenido: aquí se muestra la vista de cada sección -->
+            <ContentControl x:Name="Contenido" Grid.Column="2" Margin="0,2,4,0" Focusable="False"/>
         </Grid>
     </Grid>
 </comp:VentanaBase>
