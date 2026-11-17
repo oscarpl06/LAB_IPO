@@ -41,8 +41,8 @@
                     <TextBlock Text="Inicia sesión para gestionar el camping"
                                Style="{StaticResource Texto.Subtitulo}" Margin="0,10,0,0"/>
                     <Image Source="/LAB_IPO;component/Recursos/Imagenes/logo-insignia.png"
-                           Width="311" Height="218" Stretch="Uniform" HorizontalAlignment="Left"
-                           Margin="0,22,0,0"/>
+                           Width="311" Height="218" Stretch="Uniform" HorizontalAlignment="Center"
+                           Margin="-28,22,0,0"/>
                 </StackPanel>
 
                 <!-- Pie: versión -->
