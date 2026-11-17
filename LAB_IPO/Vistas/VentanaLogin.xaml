@@ -84,10 +84,10 @@
                     <Run Text="Clave"/>
                     <Run Text="*" Foreground="{StaticResource Pincel.Error}"/>
                 </TextBlock>
-                <PasswordBox x:Name="TxtClave" Style="{StaticResource Campo.Clave}"
-                             comp:CampoAyudante.TextoEjemplo="Introduce tu clave"
-                             ToolTip="Clave personal asociada a tu usuario. Distingue mayúsculas y minúsculas."
-                             PasswordChanged="Campo_Cambiado"/>
+                <comp:CampoClave x:Name="TxtClave"
+                                 comp:CampoAyudante.TextoEjemplo="Introduce tu clave"
+                                 ToolTip="Clave personal asociada a tu usuario. Distingue mayúsculas y minúsculas."
+                                 PasswordChanged="Campo_Cambiado"/>
 
                 <!-- ¿Has olvidado la contraseña? -->
                 <Button Style="{StaticResource Boton.Enlace}" Content="¿Has olvidado la contraseña?"

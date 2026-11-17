@@ -31,7 +31,8 @@ namespace LAB_IPO.Vistas
             if (faltaUsuario || faltaClave)
             {
                 MostrarError(MensajeCamposVacios, faltaUsuario, faltaClave);
-                (faltaUsuario ? (UIElement)TxtUsuario : TxtClave).Focus();
+                if (faltaUsuario) TxtUsuario.Focus();
+                else TxtClave.Enfocar();
                 return;
             }
 
@@ -40,7 +41,7 @@ namespace LAB_IPO.Vistas
             {
                 MostrarError(MensajeCredenciales, true, true);
                 TxtClave.Clear();
-                TxtClave.Focus();
+                TxtClave.Enfocar();
                 return;
             }
 
