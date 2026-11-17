@@ -91,5 +91,68 @@ namespace LAB_IPO.Datos
                 throw new InvalidOperationException($"Ya existe una parcela con el identificador {parcela.Identificador}.");
             Parcelas.Add(parcela);
         }
+
+        // ===== Bungalows =====
+
+        private const string RutaFotosBungalows = "pack://application:,,,/LAB_IPO;component/Recursos/Fotos/Bungalows/";
+
+        public static ObservableCollection<Bungalow> Bungalows { get; } = new ObservableCollection<Bungalow>
+        {
+            new Bungalow
+            {
+                Nombre = "Bungalow 01", TamanoM2 = 35, CapacidadMaxima = 2, PrecioNoche = 55, EstanciaMinima = 2,
+                Menaje = true, Microondas = true, WiFi = true,
+                Descripcion = "Bungaló para parejas junto a la pradera, con porche de madera y vistas al bosque.",
+                Estado = EstadoAlojamiento.Ocupado,
+                Fotos = { RutaFotosBungalows + "bungalow-01.jpg" }
+            },
+            new Bungalow
+            {
+                Nombre = "Bungalow 02", TamanoM2 = 40, CapacidadMaxima = 3, PrecioNoche = 60,
+                Menaje = true, Microondas = true, RopaCamaToallas = true,
+                Descripcion = "Cabaña de tejado a dos aguas con salón, dormitorio y altillo, a dos pasos de la zona de juegos.",
+                Estado = EstadoAlojamiento.Libre,
+                Fotos = { RutaFotosBungalows + "bungalow-02.jpg" }
+            },
+            new Bungalow
+            {
+                Nombre = "Bungalow 04", TamanoM2 = 45, CapacidadMaxima = 4, PrecioNoche = 65, EstanciaMinima = 2,
+                Menaje = true, Microondas = true, RopaCamaToallas = true, WiFi = true,
+                Descripcion = "Bungaló familiar con dos dormitorios, cocina equipada y terraza a la sombra de los pinos.",
+                Estado = EstadoAlojamiento.Ocupado,
+                Fotos = { RutaFotosBungalows + "bungalow-04.jpg", RutaFotosBungalows + "bungalow-04-dormitorio.jpg" }
+            },
+            new Bungalow
+            {
+                Nombre = "Bungalow 07", TamanoM2 = 55, CapacidadMaxima = 6, PrecioNoche = 85, EstanciaMinima = 3,
+                Menaje = true, Microondas = true, RopaCamaToallas = true, WiFi = true,
+                Descripcion = "El más amplio del complejo: tres dormitorios, salón con chimenea y vistas al río.",
+                Estado = EstadoAlojamiento.PendienteLimpieza,
+                Fotos = { RutaFotosBungalows + "bungalow-07.jpg", RutaFotosBungalows + "bungalow-07-dormitorio.jpg" }
+            }
+        };
+
+        public static bool ExisteBungalow(string nombre) =>
+            Bungalows.Any(b => string.Equals(b.Nombre?.Trim(), nombre?.Trim(), StringComparison.OrdinalIgnoreCase));
+
+        /// <summary>Siguiente nombre libre con el formato "Bungalow NN", para sugerirlo en el formulario.</summary>
+        public static string SiguienteNombreBungalow()
+        {
+            int maximo = Bungalows
+                .Select(b => Regex.Match(b.Nombre ?? "", @"^Bungalow (\d+)$", RegexOptions.IgnoreCase))
+                .Where(m => m.Success)
+                .Select(m => int.Parse(m.Groups[1].Value))
+                .DefaultIfEmpty(0)
+                .Max();
+            return $"Bungalow {maximo + 1:00}";
+        }
+
+        public static void AgregarBungalow(Bungalow bungalow)
+        {
+            if (bungalow == null) throw new ArgumentNullException(nameof(bungalow));
+            if (ExisteBungalow(bungalow.Nombre))
+                throw new InvalidOperationException($"Ya existe un bungaló llamado {bungalow.Nombre}.");
+            Bungalows.Add(bungalow);
+        }
     }
 }

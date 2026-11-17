@@ -70,6 +70,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Vistas\Paginas\FormularioBungalowVista.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Vistas\Paginas\FormularioParcelaVista.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -142,6 +146,11 @@
     <Compile Include="Componentes\VistaBase.cs" />
     <Compile Include="Datos\RepositorioAlojamientos.cs" />
     <Compile Include="Modelos\EstadoAlojamiento.cs" />
+    <Compile Include="Vistas\Paginas\FormularioBungalowVista.xaml.cs">
+      <DependentUpon>FormularioBungalowVista.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Modelos\Bungalow.cs" />
     <Compile Include="Modelos\Parcela.cs" />
     <Compile Include="Modelos\TipoParcela.cs" />
     <Compile Include="Componentes\CampoAyudante.cs" />
@@ -185,6 +194,12 @@
     <Resource Include="Recursos\Imagenes\logo-texto.png" />
     <Resource Include="Recursos\Imagenes\logo-insignia.png" />
     <Resource Include="Recursos\app.ico" />
+    <Resource Include="Recursos\Fotos\Bungalows\bungalow-01.jpg" />
+    <Resource Include="Recursos\Fotos\Bungalows\bungalow-02.jpg" />
+    <Resource Include="Recursos\Fotos\Bungalows\bungalow-04.jpg" />
+    <Resource Include="Recursos\Fotos\Bungalows\bungalow-04-dormitorio.jpg" />
+    <Resource Include="Recursos\Fotos\Bungalows\bungalow-07.jpg" />
+    <Resource Include="Recursos\Fotos\Bungalows\bungalow-07-dormitorio.jpg" />
     <Resource Include="Recursos\Fotos\Parcelas\parcela-p03.jpg" />
     <Resource Include="Recursos\Fotos\Parcelas\parcela-p06.jpg" />
     <Resource Include="Recursos\Fotos\Parcelas\parcela-p12.jpg" />

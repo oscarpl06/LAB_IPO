@@ -66,15 +66,17 @@
             <Border Background="{StaticResource Pincel.Arena200}" CornerRadius="10" Padding="4"
                     HorizontalAlignment="Left">
                 <StackPanel Orientation="Horizontal">
-                    <RadioButton Style="{StaticResource Boton.Pestana}" GroupName="TipoAlojamiento"
-                                 Content="Parcelas" IsChecked="True" ToolTip="Listado de parcelas"/>
-                    <RadioButton Style="{StaticResource Boton.Pestana}" GroupName="TipoAlojamiento"
-                                 Content="Bungalows" IsEnabled="False" ToolTip="Sección en desarrollo"/>
+                    <RadioButton x:Name="TabParcelas" Style="{StaticResource Boton.Pestana}" GroupName="TipoAlojamiento"
+                                 Content="Parcelas" IsChecked="True" ToolTip="Listado de parcelas"
+                                 Checked="Pestana_Checked"/>
+                    <RadioButton x:Name="TabBungalows" Style="{StaticResource Boton.Pestana}" GroupName="TipoAlojamiento"
+                                 Content="Bungalows" ToolTip="Bungalows y cabañas de madera"
+                                 Checked="Pestana_Checked"/>
                 </StackPanel>
             </Border>
 
             <!-- Filtros de búsqueda -->
-            <GroupBox Style="{StaticResource Grupo}" Header="Filtros de búsqueda" Margin="0,12,0,0"
+            <GroupBox x:Name="GrupoFiltros" Style="{StaticResource Grupo}" Header="Filtros de búsqueda" Margin="0,12,0,0"
                       Padding="20,10,20,14">
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -115,7 +117,7 @@
             <Grid Margin="0,16,0,10">
                 <TextBlock x:Name="TxtRecuento" Style="{StaticResource Texto.Secundario}" VerticalAlignment="Center"/>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button Style="{StaticResource Boton.Secundario}" Content="Tipos y tarifas" MinWidth="180"
+                    <Button x:Name="BtnTiposTarifas" Style="{StaticResource Boton.Secundario}" Content="Tipos y tarifas" MinWidth="180"
                             IsEnabled="False" ToolTipService.ShowOnDisabled="True" ToolTip="Sección en desarrollo"
                             Margin="0,0,12,0"/>
                     <Button x:Name="BtnNuevaParcela" Style="{StaticResource Boton.Primario}" MinWidth="200"
@@ -123,7 +125,7 @@
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Style="{StaticResource Icono}" Text="&#xE710;" FontSize="13" Margin="0,0,8,0"
                                        Foreground="{StaticResource Pincel.Blanco}"/>
-                            <TextBlock Text="Nueva parcela"/>
+                            <TextBlock x:Name="TxtNuevo" Text="Nueva parcela"/>
                         </StackPanel>
                     </Button>
                 </StackPanel>
@@ -157,13 +159,92 @@
             <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
                 <TextBlock Style="{StaticResource Icono}" Text="{StaticResource Icono.Aviso}" FontSize="14"
                            Foreground="{StaticResource Pincel.Aviso}"/>
-                <TextBlock Style="{StaticResource Texto.Nota}" Margin="8,0,0,0"
+                <TextBlock x:Name="TxtAvisoEliminar" Style="{StaticResource Texto.Nota}" Margin="8,0,0,0"
                            Text="Al eliminar una parcela se solicitará confirmación antes de borrar sus datos."/>
             </StackPanel>
         </StackPanel>
 
-        <!-- Tabla de parcelas + ficha lateral -->
         <Grid>
+        <!-- ===== Bungalows: tarjetas con foto (CU-07) ===== -->
+        <ScrollViewer x:Name="PanelBungalows" VerticalScrollBarVisibility="Auto" Focusable="False"
+                      Visibility="Collapsed" Padding="0,0,4,0">
+            <ItemsControl x:Name="ListaBungalows" Margin="-8,-4,0,0">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Width="300" Margin="8,4,8,14" Style="{StaticResource Tarjeta}" CornerRadius="16">
+                            <StackPanel>
+                                <!-- Foto de portada -->
+                                <Grid Height="170">
+                                    <Border CornerRadius="16,16,0,0" Background="{StaticResource Pincel.Salvia100}">
+                                        <StackPanel VerticalAlignment="Center">
+                                            <TextBlock Style="{StaticResource Icono}" Text="&#xE91B;" FontSize="26"
+                                                       Foreground="{StaticResource Pincel.Salvia500}"/>
+                                            <TextBlock Text="Sin fotos" Style="{StaticResource Texto.Nota}"
+                                                       HorizontalAlignment="Center" Margin="0,6,0,0"/>
+                                        </StackPanel>
+                                    </Border>
+                                    <Border CornerRadius="16,16,0,0">
+                                        <Border.Background>
+                                            <ImageBrush Stretch="UniformToFill"
+                                                        ImageSource="{Binding Portada, Converter={StaticResource RutaImagen}, ConverterParameter=600}"/>
+                                        </Border.Background>
+                                    </Border>
+                                    <Border Style="{StaticResource Chip.Estado}" VerticalAlignment="Top" Margin="12">
+                                        <TextBlock Text="{Binding EstadoTexto}" Style="{StaticResource Chip.EstadoTexto}"/>
+                                    </Border>
+                                    <Border VerticalAlignment="Top" HorizontalAlignment="Right" Margin="12"
+                                            Background="#B3172A1F" CornerRadius="10" Padding="8,3">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Style="{StaticResource Icono}" Text="&#xE91B;" FontSize="11"
+                                                       Foreground="{StaticResource Pincel.Blanco}"/>
+                                            <TextBlock Text="{Binding FotosTexto}" FontSize="11" Margin="5,0,0,0"
+                                                       Foreground="{StaticResource Pincel.Blanco}"/>
+                                        </StackPanel>
+                                    </Border>
+                                </Grid>
+
+                                <!-- Datos -->
+                                <StackPanel Margin="18,14,18,16">
+                                    <TextBlock Text="{Binding Nombre}" Style="{StaticResource Texto.TituloDialogo}" FontSize="17"/>
+                                    <TextBlock Style="{StaticResource Texto.Secundario}" Margin="0,4,0,0">
+                                        <Run Text="{Binding TamanoTexto, Mode=OneWay}"/><Run Text="  ·  "/><Run Text="{Binding CapacidadTexto, Mode=OneWay}"/>
+                                    </TextBlock>
+                                    <TextBlock Text="{Binding EquipamientoTexto}" Style="{StaticResource Texto.Nota}"
+                                               Margin="0,8,0,0" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+
+                                    <Border Style="{StaticResource Separador}" Margin="0,12,0,10"/>
+
+                                    <Grid>
+                                        <StackPanel>
+                                            <TextBlock>
+                                                <Run Text="{Binding PrecioTexto, Mode=OneWay}" FontFamily="{StaticResource Fuente.Titulos}"
+                                                     FontSize="20" FontWeight="SemiBold" Foreground="{StaticResource Pincel.Bosque800}"/>
+                                                <Run Text=" / noche" FontSize="12" Foreground="{StaticResource Pincel.TextoSecundario}"/>
+                                            </TextBlock>
+                                            <TextBlock Text="{Binding EstanciaTexto}" Style="{StaticResource Texto.Nota}" FontSize="11"/>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                            <Button Style="{StaticResource Boton.Fila}" Content="Ver" Margin="0,0,6,0"
+                                                    IsEnabled="False" ToolTip="Sección en desarrollo"/>
+                                            <Button Style="{StaticResource Boton.Fila}" Content="Editar"
+                                                    IsEnabled="False" ToolTip="Sección en desarrollo"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <!-- Tabla de parcelas + ficha lateral -->
+        <Grid x:Name="PanelParcelas">
             <Border Style="{StaticResource Tarjeta}" CornerRadius="14">
                 <DockPanel>
                     <!-- Cabecera de la tabla -->
@@ -384,6 +465,7 @@
                     </ScrollViewer>
                 </DockPanel>
             </Border>
+        </Grid>
         </Grid>
     </DockPanel>
 </comp:VistaBase>

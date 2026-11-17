@@ -39,9 +39,11 @@ namespace LAB_IPO.Vistas.Paginas
         }
 
         /// <param name="mensajeGuardado">Si se indica, muestra un aviso de confirmación sobre la tabla.</param>
-        public AlojamientosVista(string mensajeGuardado)
+        /// <param name="mostrarBungalows">Abre directamente la pestaña de bungalows.</param>
+        public AlojamientosVista(string mensajeGuardado, bool mostrarBungalows = false)
         {
             InitializeComponent();
+            ListaBungalows.ItemsSource = RepositorioAlojamientos.Bungalows;
 
             // Vista propia de la colección, para que los filtros no afecten a otras pantallas.
             _vista = new ListCollectionView(RepositorioAlojamientos.Parcelas);
@@ -71,17 +73,55 @@ namespace LAB_IPO.Vistas.Paginas
                 }
             };
 
+            if (mostrarBungalows)
+                TabBungalows.IsChecked = true;
+
             if (!string.IsNullOrEmpty(mensajeGuardado))
             {
                 TxtAvisoGuardado.Text = mensajeGuardado;
                 AvisoGuardado.Visibility = Visibility.Visible;
-                // La parcela nueva se añade al final: se baja hasta ella para que se vea.
+                // El alojamiento nuevo se añade al final: se baja hasta él para que se vea.
                 Loaded += (s, e) =>
                 {
+                    if (mostrarBungalows)
+                    {
+                        PanelBungalows.ScrollToEnd();
+                        return;
+                    }
                     var ultima = RepositorioAlojamientos.Parcelas.LastOrDefault();
                     if (ultima != null) ListaParcelas.ScrollIntoView(ultima);
                 };
             }
+        }
+
+        // ===== Pestañas Parcelas / Bungalows =====
+
+        private bool MostrandoBungalows => TabBungalows?.IsChecked == true;
+
+        private void Pestana_Checked(object sender, RoutedEventArgs e)
+        {
+            // Se dispara también mientras se construye la vista: espera a que exista todo.
+            if (PanelBungalows == null || PanelParcelas == null || TxtAvisoEliminar == null) return;
+
+            bool bungalows = MostrandoBungalows;
+            PanelBungalows.Visibility = bungalows ? Visibility.Visible : Visibility.Collapsed;
+            PanelParcelas.Visibility = bungalows ? Visibility.Collapsed : Visibility.Visible;
+
+            // Los filtros y las tarifas son de parcelas; la consulta de bungalows llegará con el CU-10.
+            GrupoFiltros.Visibility = bungalows ? Visibility.Collapsed : Visibility.Visible;
+            BtnTiposTarifas.Visibility = bungalows ? Visibility.Collapsed : Visibility.Visible;
+
+            TxtNuevo.Text = bungalows ? "Nuevo bungalow" : "Nueva parcela";
+            BtnNuevaParcela.ToolTip = bungalows
+                ? "Registrar un bungalow nuevo en el complejo"
+                : "Registrar una parcela nueva en el camping";
+            TxtAvisoEliminar.Text = bungalows
+                ? "Al eliminar un bungalow se solicitará confirmación antes de borrar sus datos."
+                : "Al eliminar una parcela se solicitará confirmación antes de borrar sus datos.";
+
+            AvisoGuardado.Visibility = Visibility.Collapsed;
+            if (bungalows) CerrarFicha();
+            ActualizarRecuento();
         }
 
         // ===== Filtros =====
@@ -129,6 +169,14 @@ namespace LAB_IPO.Vistas.Paginas
 
         private void ActualizarRecuento()
         {
+            if (MostrandoBungalows)
+            {
+                int n = RepositorioAlojamientos.Bungalows.Count;
+                TxtRecuento.Text = n == 1 ? "1 bungalow en el complejo" : $"{n} bungalows en el complejo";
+                TxtPaginacion.Text = $"Mostrando {n} de {n} bungalows";
+                return;
+            }
+
             int visibles = _vista.Count;
             int total = RepositorioAlojamientos.Parcelas.Count;
 
@@ -218,9 +266,13 @@ namespace LAB_IPO.Vistas.Paginas
 
         // ===== Alta (CU-03) =====
 
+        // Abre el alta de parcela (CU-03) o de bungaló (CU-07) según la pestaña.
         private void NuevaParcela_Click(object sender, RoutedEventArgs e)
         {
-            Navegar(new FormularioParcelaVista());
+            if (MostrandoBungalows)
+                Navegar(new FormularioBungalowVista());
+            else
+                Navegar(new FormularioParcelaVista());
         }
     }
 }

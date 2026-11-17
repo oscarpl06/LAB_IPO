@@ -90,7 +90,7 @@ namespace LAB_IPO.Vistas
         private void Menu_Click(object sender, RoutedEventArgs e)
         {
             var opcion = (string)((RadioButton)sender).Content;
-            if (VistaActual is FormularioParcelaVista && opcion == "Alojamientos")
+            if (opcion == "Alojamientos" && !(VistaActual is AlojamientosVista))
                 Navegar(new AlojamientosVista());
         }
 
