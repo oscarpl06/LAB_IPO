@@ -203,6 +203,7 @@
                         <ListBox x:Name="ListaParcelas" BorderThickness="0" Background="Transparent"
                                  ItemContainerStyle="{StaticResource Fila.Parcela}"
                                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                 IsSynchronizedWithCurrentItem="False"
                                  SelectionChanged="ListaParcelas_SelectionChanged">
                             <ListBox.Template>
                                 <ControlTemplate TargetType="ListBox">
