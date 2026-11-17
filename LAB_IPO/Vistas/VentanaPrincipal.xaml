@@ -46,10 +46,10 @@
                                ToolTip="Fecha y hora de tu anterior inicio de sesión"/>
                 </StackPanel>
 
-                <Button Grid.Column="5" Style="{StaticResource Boton.SecundarioPequeno}" Content="Cerrar"
-                        MinWidth="92" VerticalAlignment="Center"
-                        ToolTip="Salir de la aplicación"
-                        Click="Cerrar_Click"/>
+                <Button x:Name="BtnCerrarSesion" Grid.Column="5" Style="{StaticResource Boton.SecundarioPequeno}"
+                        Content="Cerrar sesión" MinWidth="92" VerticalAlignment="Center"
+                        ToolTip="Cierra tu sesión y vuelve a la pantalla de acceso"
+                        Click="CerrarSesion_Click"/>
             </Grid>
         </Border>
 
