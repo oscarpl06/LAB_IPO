@@ -47,6 +47,12 @@ namespace LAB_IPO.Vistas
         /// <summary>Cierra la sesión y vuelve a la ventana de login sin cerrar la aplicación.</summary>
         private void CerrarSesion_Click(object sender, RoutedEventArgs e)
         {
+            bool confirmar = DialogoMensaje.Confirmar(this,
+                "¿Cerrar sesión?",
+                "Volverás a la pantalla de acceso y tendrás que introducir de nuevo tu usuario y tu clave.",
+                "Cerrar sesión", "Cancelar");
+            if (!confirmar) return;
+
             Sesion.Cerrar();
 
             var login = new VentanaLogin();
