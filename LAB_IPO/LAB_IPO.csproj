@@ -74,6 +74,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Componentes\CampoClave.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Componentes\AvatarUsuario.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -107,6 +111,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Componentes\CampoAyudante.cs" />
+    <Compile Include="Componentes\CampoClave.xaml.cs">
+      <DependentUpon>CampoClave.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Componentes\ComandoSimple.cs" />
     <Compile Include="Componentes\VentanaBase.cs" />
     <Compile Include="Datos\RepositorioUsuarios.cs" />

@@ -16,6 +16,8 @@
     <sys:String x:Key="Icono.Pregunta">&#xE9CE;</sys:String>
     <sys:String x:Key="Icono.Correcto">&#xE73E;</sys:String>
     <sys:String x:Key="Icono.Candado">&#xE72E;</sys:String>
+    <sys:String x:Key="Icono.Ver">&#xE890;</sys:String>
+    <sys:String x:Key="Icono.Ocultar">&#xED1A;</sys:String>
     <sys:String x:Key="Icono.Minimizar">&#xE921;</sys:String>
     <sys:String x:Key="Icono.Maximizar">&#xE922;</sys:String>
     <sys:String x:Key="Icono.Restaurar">&#xE923;</sys:String>

@@ -308,6 +308,37 @@
         </Setter>
     </Style>
 
+    <!-- Botón de ojo para mostrar u ocultar la clave (dentro del campo) -->
+    <Style x:Key="Boton.VerClave" TargetType="ToggleButton">
+        <Setter Property="Width" Value="34"/>
+        <Setter Property="Height" Value="30"/>
+        <Setter Property="Foreground" Value="{StaticResource Pincel.TextoSecundario}"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Focusable" Value="False"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ToggleButton">
+                    <Border x:Name="Fondo" CornerRadius="6" Background="Transparent">
+                        <TextBlock x:Name="Glifo" Style="{StaticResource Icono}" FontSize="16"
+                                   Text="{StaticResource Icono.Ver}" Foreground="{TemplateBinding Foreground}"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="Glifo" Property="Text" Value="{StaticResource Icono.Ocultar}"/>
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Fondo" Property="Background" Value="{StaticResource Pincel.Salvia100}"/>
+                            <Setter TargetName="Glifo" Property="Foreground" Value="{StaticResource Pincel.Bosque700}"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="Fondo" Property="Background" Value="{StaticResource Pincel.Salvia200}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <!-- ============================================================
          Campos de texto
          ============================================================ -->
