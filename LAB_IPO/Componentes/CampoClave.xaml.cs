@@ -1,6 +1,7 @@
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace LAB_IPO.Componentes
 {
@@ -19,6 +20,25 @@ namespace LAB_IPO.Componentes
         public CampoClave()
         {
             InitializeComponent();
+
+            // Aviso de Bloq Mayús: se comprueba al entrar en el campo, con cada tecla y al salir.
+            IsKeyboardFocusWithinChanged += (s, e) => ActualizarAvisoMayusculas();
+            PreviewKeyDown += (s, e) => ActualizarAvisoMayusculas();
+            PreviewKeyUp += (s, e) => ActualizarAvisoMayusculas();
+        }
+
+        /// <summary>True si el campo tiene el foco y el bloqueo de mayúsculas está activado.</summary>
+        public bool AvisoMayusculasVisible => AvisoMayusculas.Visibility == Visibility.Visible;
+
+        private void ActualizarAvisoMayusculas()
+        {
+            bool mostrar = IsKeyboardFocusWithin && Keyboard.IsKeyToggled(Key.CapsLock);
+            AvisoMayusculas.Visibility = mostrar ? Visibility.Visible : Visibility.Collapsed;
+
+            // Deja sitio al aviso para que el texto no quede debajo.
+            var relleno = new Thickness(12, 0, mostrar ? 210 : 46, 0);
+            CajaClave.Padding = relleno;
+            CajaClaveVisible.Padding = relleno;
         }
 
         public string Password

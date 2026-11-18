@@ -10,6 +10,14 @@ namespace LAB_IPO.Componentes
     {
         /// <summary>Muestra otra vista y marca su opción del menú lateral.</summary>
         void Navegar(VistaBase vista);
+
+        /// <summary>
+        /// Abre un panel a toda la altura del borde derecho de la ventana con el contenido indicado.
+        /// <paramref name="alCerrar"/> se llama cuando el panel se cierra (X, Esc o clic fuera).
+        /// </summary>
+        void AbrirPanelLateral(FrameworkElement contenido, System.Action alCerrar = null);
+
+        void CerrarPanelLateral();
     }
 
     /// <summary>
@@ -33,5 +41,7 @@ namespace LAB_IPO.Componentes
         }
 
         protected Window VentanaPropietaria => Window.GetWindow(this);
+
+        protected INavegador Navegador => Window.GetWindow(this) as INavegador;
     }
 }
