@@ -17,6 +17,23 @@ namespace LAB_IPO.Modelos
         public DateTime Entrada { get; set; }
         public DateTime Salida { get; set; }
 
+        /// <summary>Franja horaria estimada de llegada y de salida (RF-15).</summary>
+        public string HoraLlegada { get; set; }
+        public string HoraSalida { get; set; }
+
+        /// <summary>Uno o más teléfonos separados por comas; e-mail y documento opcionales (RF-16).</summary>
+        public string Telefonos { get; set; }
+        public string Correo { get; set; }
+        public string Documento { get; set; }
+
+        public int Adultos { get; set; }
+        public int Ninos { get; set; }
+        public int Ocupantes => Adultos + Ninos;
+
+        public string Solicitudes { get; set; }
+
+        public int Noches => (int)(Salida.Date - Entrada.Date).TotalDays;
+
         public string NombreAlojamiento => Alojamientos.Nombre(Alojamiento);
         public string FechasTexto => $"{Entrada:dd/MM} – {Salida:dd/MM}";
 

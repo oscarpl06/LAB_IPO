@@ -133,6 +133,21 @@
                     </StackPanel>
                 </Border>
 
+                <!-- Aviso de reserva creada (CU-16) -->
+                <Border x:Name="AvisoGuardado" DockPanel.Dock="Top" Background="{StaticResource Pincel.Salvia100}"
+                        CornerRadius="10" BorderBrush="{StaticResource Pincel.Salvia200}" BorderThickness="1"
+                        Padding="14,10" Margin="0,12,0,0" Visibility="Collapsed">
+                    <DockPanel>
+                        <Border Width="22" Height="22" CornerRadius="11" Background="{StaticResource Pincel.Bosque700}"
+                                VerticalAlignment="Top">
+                            <TextBlock Style="{StaticResource Icono}" Text="{StaticResource Icono.Correcto}" FontSize="11"
+                                       Foreground="{StaticResource Pincel.Blanco}"/>
+                        </Border>
+                        <TextBlock x:Name="TxtAvisoGuardado" Style="{StaticResource Texto.Base}" FontWeight="SemiBold"
+                                   Foreground="{StaticResource Pincel.Bosque800}" Margin="10,1,0,0" TextWrapping="Wrap"/>
+                    </DockPanel>
+                </Border>
+
                 <!-- Leyenda -->
                 <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="2,14,0,10">
                     <Border Style="{StaticResource Leyenda.Muestra}" Background="{StaticResource Pincel.Salvia100}"
@@ -208,8 +223,7 @@
                                 IsEnabled="False" ToolTipService.ShowOnDisabled="True" ToolTip="Sección en desarrollo"/>
 
                         <Button x:Name="BtnNuevaReserva" Style="{StaticResource Boton.Primario}" HorizontalAlignment="Stretch"
-                                Margin="0,18,0,0"
-                                IsEnabled="False" ToolTipService.ShowOnDisabled="True" ToolTip="Sección en desarrollo">
+                                Margin="0,18,0,0" ToolTipService.ShowOnDisabled="True" Click="NuevaReserva_Click">
                             <StackPanel Orientation="Horizontal">
                                 <TextBlock Style="{StaticResource Icono}" Text="&#xE710;" FontSize="13" Margin="0,0,8,0"
                                            Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"/>

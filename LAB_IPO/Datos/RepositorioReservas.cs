@@ -49,8 +49,64 @@ namespace LAB_IPO.Datos
             new Reserva
             {
                 Localizador = localizador, Titular = titular, Alojamiento = alojamiento,
-                Entrada = Hoy.AddDays(entrada), Salida = Hoy.AddDays(salida)
+                Entrada = Hoy.AddDays(entrada), Salida = Hoy.AddDays(salida),
+                HoraLlegada = "16:00 - 18:00", HoraSalida = "Antes de 12:00",
+                Telefonos = "600 123 456", Adultos = 2
             };
+
+        /// <summary>Siguiente localizador libre con el formato R-NNNN.</summary>
+        public static string SiguienteLocalizador()
+        {
+            int maximo = Reservas
+                .Select(r => int.TryParse((r.Localizador ?? "").Replace("R-", ""), out int n) ? n : 0)
+                .DefaultIfEmpty(0)
+                .Max();
+            return $"R-{maximo + 1:0000}";
+        }
+
+        /// <summary>
+        /// Comprueba si se puede reservar el alojamiento (RF-17, RF-18): libre todas las noches,
+        /// sin otra reserva coincidente y, en los bungalows, sin superar la capacidad máxima
+        /// y cumpliendo la estancia mínima. Devuelve el motivo si no se puede, o null si está disponible.
+        /// </summary>
+        public static string MotivoNoDisponible(object alojamiento, DateTime entrada, DateTime salida, int ocupantes)
+        {
+            string nombre = Alojamientos.Nombre(alojamiento);
+            if (!Existe(alojamiento))
+                return $"{nombre} ya no existe en el camping.";
+
+            for (var dia = entrada.Date; dia < salida.Date; dia = dia.AddDays(1))
+            {
+                var estado = EstadoEn(alojamiento, dia);
+                if (estado.Reserva != null)
+                    return $"{nombre} ya está reservado esas fechas (reserva {estado.Reserva.Localizador}, "
+                         + $"del {estado.Reserva.Entrada:dd/MM/yyyy} al {estado.Reserva.Salida:dd/MM/yyyy}).";
+                if (estado.Estado != EstadoAlojamiento.Libre)
+                    return $"{nombre} no está libre el {dia:dd/MM/yyyy}: "
+                         + Alojamientos.EstadoTexto(estado.Estado).ToLowerInvariant() + ".";
+            }
+
+            if (alojamiento is Bungalow b)
+            {
+                if (ocupantes > b.CapacidadMaxima)
+                    return $"{b.Nombre} admite como máximo {b.CapacidadMaxima} "
+                         + (b.CapacidadMaxima == 1 ? "persona" : "personas") + $" y la reserva es para {ocupantes}.";
+                int noches = (int)(salida.Date - entrada.Date).TotalDays;
+                if (b.EstanciaMinima.HasValue && noches < b.EstanciaMinima.Value)
+                    return $"{b.Nombre} exige una estancia mínima de {b.EstanciaMinima} noches "
+                         + $"y la reserva es de {noches} " + (noches == 1 ? "noche" : "noches") + ".";
+            }
+
+            return null;
+        }
+
+        public static void Agregar(Reserva reserva)
+        {
+            if (reserva == null) throw new ArgumentNullException(nameof(reserva));
+            string motivo = MotivoNoDisponible(reserva.Alojamiento, reserva.Entrada, reserva.Salida, reserva.Ocupantes);
+            if (motivo != null) throw new InvalidOperationException(motivo);
+            Reservas.Add(reserva);
+        }
 
         private static Parcela Parcela(string id) =>
             RepositorioAlojamientos.Parcelas.First(p => p.Identificador == id);
