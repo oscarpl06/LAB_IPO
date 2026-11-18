@@ -78,7 +78,9 @@ namespace LAB_IPO.Datos
         /// sin otra reserva coincidente y, en los bungalows, sin superar la capacidad máxima
         /// y cumpliendo la estancia mínima. Devuelve el motivo si no se puede, o null si está disponible.
         /// </summary>
-        public static string MotivoNoDisponible(object alojamiento, DateTime entrada, DateTime salida, int ocupantes)
+        /// <param name="excluir">Al modificar una reserva (CU-18), la propia reserva no cuenta como conflicto.</param>
+        public static string MotivoNoDisponible(object alojamiento, DateTime entrada, DateTime salida, int ocupantes,
+                                                Reserva excluir = null)
         {
             string nombre = Alojamientos.Nombre(alojamiento);
             if (!Existe(alojamiento))
@@ -86,13 +88,19 @@ namespace LAB_IPO.Datos
 
             for (var dia = entrada.Date; dia < salida.Date; dia = dia.AddDays(1))
             {
-                var estado = EstadoEn(alojamiento, dia);
-                if (estado.Reserva != null)
-                    return $"{nombre} ya tiene una reserva en esas fechas ({estado.Reserva.Localizador}, "
-                         + $"del {estado.Reserva.Entrada:dd/MM/yyyy} al {estado.Reserva.Salida:dd/MM/yyyy}).";
-                if (estado.Estado != EstadoAlojamiento.Libre)
+                var otra = Reservas.FirstOrDefault(r => r != excluir && !r.Cancelada
+                                                        && r.Alojamiento == alojamiento && r.OcupaNoche(dia));
+                if (otra != null)
+                    return $"{nombre} ya tiene una reserva en esas fechas ({otra.Localizador}, "
+                         + $"del {otra.Entrada:dd/MM/yyyy} al {otra.Salida:dd/MM/yyyy}).";
+
+                var estado = EstadoSinReservas(alojamiento, dia);
+                // La ocupación de hoy puede deberse a la propia reserva que se está modificando.
+                bool propia = estado == EstadoAlojamiento.Ocupado && excluir != null
+                              && excluir.Alojamiento == alojamiento && excluir.OcupaNoche(dia);
+                if (estado != EstadoAlojamiento.Libre && !propia)
                     return $"{nombre} no está libre el {dia:dd/MM/yyyy}: "
-                         + Alojamientos.EstadoTexto(estado.Estado).ToLowerInvariant() + ".";
+                         + Alojamientos.EstadoTexto(estado).ToLowerInvariant() + ".";
             }
 
             if (alojamiento is Bungalow b)
@@ -142,15 +150,60 @@ namespace LAB_IPO.Datos
             if (reserva != null)
                 return new EstadoDia { Estado = EstadoAlojamiento.Ocupado, Reserva = reserva };
 
+            return new EstadoDia { Estado = EstadoSinReservas(alojamiento, fecha) };
+        }
+
+        /// <summary>Estado de un día sin tener en cuenta las reservas: el actual hoy, o la incidencia prevista.</summary>
+        private static EstadoAlojamiento EstadoSinReservas(object alojamiento, DateTime fecha)
+        {
+            fecha = fecha.Date;
             if (fecha == Hoy)
-                return new EstadoDia { Estado = Alojamientos.Estado(alojamiento) };
+                return Alojamientos.Estado(alojamiento);
 
             var incidencia = Incidencias.FirstOrDefault(i => i.Alojamiento == alojamiento
                 && fecha >= Hoy.AddDays(i.Desde) && fecha <= Hoy.AddDays(i.Hasta));
             if (incidencia.Alojamiento != null && fecha > Hoy)
-                return new EstadoDia { Estado = incidencia.Estado };
+                return incidencia.Estado;
 
-            return new EstadoDia { Estado = EstadoAlojamiento.Libre };
+            return EstadoAlojamiento.Libre;
+        }
+
+        /// <summary>
+        /// CU-18 · Aplica los cambios a una reserva existente después de volver a comprobar la
+        /// disponibilidad (sin contarse a sí misma). Si algo falla, la reserva no se toca.
+        /// </summary>
+        public static void Modificar(Reserva reserva, Reserva cambios)
+        {
+            if (reserva == null || !Reservas.Contains(reserva))
+                throw new InvalidOperationException("La reserva ya no existe.");
+            if (!reserva.PuedeEditarse)
+                throw new InvalidOperationException($"La reserva {reserva.Localizador} ya no se puede modificar.");
+            string motivo = MotivoNoDisponible(cambios.Alojamiento, cambios.Entrada, cambios.Salida,
+                                               cambios.Ocupantes, excluir: reserva);
+            if (motivo != null) throw new InvalidOperationException(motivo);
+
+            reserva.Alojamiento = cambios.Alojamiento;
+            reserva.Entrada = cambios.Entrada;
+            reserva.Salida = cambios.Salida;
+            reserva.HoraLlegada = cambios.HoraLlegada;
+            reserva.HoraSalida = cambios.HoraSalida;
+            reserva.Titular = cambios.Titular;
+            reserva.Telefonos = cambios.Telefonos;
+            reserva.Correo = cambios.Correo;
+            reserva.Documento = cambios.Documento;
+            reserva.Adultos = cambios.Adultos;
+            reserva.Ninos = cambios.Ninos;
+            reserva.Solicitudes = cambios.Solicitudes;
+        }
+
+        /// <summary>CU-19 · Cancela una reserva que todavía no ha empezado; deja de ocupar el alojamiento.</summary>
+        public static void Cancelar(Reserva reserva)
+        {
+            if (reserva == null || !Reservas.Contains(reserva))
+                throw new InvalidOperationException("La reserva ya no existe.");
+            if (!reserva.PuedeCancelarse)
+                throw new InvalidOperationException(reserva.AyudaCancelar + ".");
+            reserva.EstadoRegistrado = EstadoReserva.Cancelada;
         }
 
         /// <summary>

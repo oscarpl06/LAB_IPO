@@ -72,6 +72,24 @@ namespace LAB_IPO.Modelos
         /// <summary>Todavía no ha llegado (ni se ha cancelado).</summary>
         public bool PendienteDeLlegada => !Cancelada && Entrada.Date >= DateTime.Today && Estado != EstadoReserva.EnEstancia;
 
+        /// <summary>CU-18: se puede editar mientras no esté cancelada ni haya terminado.</summary>
+        public bool PuedeEditarse => !Cancelada && Salida.Date > DateTime.Today;
+
+        /// <summary>CU-19: solo se cancelan las que todavía no han empezado.</summary>
+        public bool PuedeCancelarse => !Cancelada && Entrada.Date >= DateTime.Today && Estado != EstadoReserva.EnEstancia;
+
+        public string AyudaEditar =>
+            Cancelada ? "Una reserva cancelada no se puede modificar"
+            : !PuedeEditarse ? "La estancia ya ha terminado"
+            : Estado == EstadoReserva.EnEstancia ? "Modificar la reserva (en estancia: solo salida, ocupantes y contacto)"
+            : "Modificar los datos de la reserva";
+
+        public string AyudaCancelar =>
+            Cancelada ? "La reserva ya está cancelada"
+            : Estado == EstadoReserva.EnEstancia ? "No se puede cancelar: el cliente ya está en el camping"
+            : !PuedeCancelarse ? "La estancia ya ha empezado o terminado"
+            : "Cancelar la reserva (se pedirá confirmación)";
+
         public string EntradaSalidaTexto => $"{Entrada:dd/MM} - {Salida:dd/MM}";
         public string NochesTexto => Noches == 1 ? "1 noche" : $"{Noches} noches";
 

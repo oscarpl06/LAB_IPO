@@ -18,6 +18,13 @@ namespace LAB_IPO.Vistas.Paginas
             FotoAlojamiento.ImageSource = RutaImagenConverter.Cargar(reserva.FotoAlojamiento, 900);
         }
 
+        // CU-18 · Abre el formulario en modo edición; al navegar, la ventana cierra el panel lateral.
+        private void Editar_Click(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is Reserva reserva)
+                (Window.GetWindow(this) as INavegador)?.Navegar(new FormularioReservaVista(reserva));
+        }
+
         private void Cerrar_Click(object sender, RoutedEventArgs e)
         {
             (Window.GetWindow(this) as INavegador)?.CerrarPanelLateral();
