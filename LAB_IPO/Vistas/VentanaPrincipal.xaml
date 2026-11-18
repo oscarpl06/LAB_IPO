@@ -75,8 +75,9 @@
                         <RadioButton x:Name="MenuInicio" Style="{StaticResource Boton.Menu}" GroupName="Menu"
                                      Content="Inicio" IsChecked="True" ToolTip="Resumen del día en el camping"
                                      Checked="Menu_Checked" Click="Menu_Click"/>
-                        <RadioButton Style="{StaticResource Boton.Menu}" GroupName="Menu" Content="Reservas"
-                                     IsEnabled="False" ToolTip="Sección en desarrollo"/>
+                        <RadioButton x:Name="MenuReservas" Style="{StaticResource Boton.Menu}" GroupName="Menu"
+                                     Content="Reservas" ToolTip="Crear una reserva nueva"
+                                     Checked="Menu_Checked" Click="Menu_Click"/>
                         <RadioButton x:Name="MenuPersonal" Style="{StaticResource Boton.Menu}" GroupName="Menu"
                                      Content="Personal" ToolTip="Empleados temporales, guías y monitores"
                                      Checked="Menu_Checked" Click="Menu_Click"/>

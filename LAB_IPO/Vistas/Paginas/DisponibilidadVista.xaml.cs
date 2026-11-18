@@ -48,6 +48,25 @@ namespace LAB_IPO.Vistas.Paginas
             Dibujar();
         }
 
+        /// <summary>
+        /// Tras crear una reserva (CU-16): muestra el aviso, sitúa el calendario en su entrada
+        /// y deja seleccionada la casilla del primer día.
+        /// </summary>
+        public DisponibilidadVista(string mensajeGuardado, Reserva reserva) : this()
+        {
+            TxtAvisoGuardado.Text = mensajeGuardado;
+            AvisoGuardado.Visibility = Visibility.Visible;
+
+            _inicio = reserva.Entrada.Date;
+            Dibujar();
+            Seleccionar(reserva.Alojamiento, reserva.Entrada.Date);
+
+            // Lleva a la vista la fila de la reserva nueva.
+            Loaded += (s, e) => Dispatcher.BeginInvoke(new Action(() =>
+                _casillas.FirstOrDefault(c => c.IsChecked == true)?.BringIntoView()),
+                System.Windows.Threading.DispatcherPriority.Loaded);
+        }
+
         // ===== Filtro y navegación =====
 
         private void CmbTipo_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -479,6 +498,14 @@ namespace LAB_IPO.Vistas.Paginas
         private static SolidColorBrush Pincel(string hex) =>
             new SolidColorBrush((Color)ColorConverter.ConvertFromString(hex));
 
+        // ===== Nueva reserva (CU-16) =====
+
+        private void NuevaReserva_Click(object sender, RoutedEventArgs e)
+        {
+            if (_seleccionAlojamiento == null || !_seleccionFecha.HasValue) return;
+            Navegar(new FormularioReservaVista(_seleccionAlojamiento, _seleccionFecha.Value));
+        }
+
         // ===== Selección =====
 
         // Se activa mientras se marcan las casillas desde el código, para no reaccionar a esos cambios.
@@ -535,6 +562,15 @@ namespace LAB_IPO.Vistas.Paginas
             ChipSelEstado.DataContext = estado;
             TxtSelEstado.Text = Alojamientos.EstadoTexto(estado.Estado);
             CmbSelEstado.SelectedIndex = (int)estado.Estado;
+
+            // CU-16: solo se puede reservar un día libre a partir de hoy.
+            bool reservable = estado.Estado == EstadoAlojamiento.Libre && dia.Value >= DateTime.Today;
+            BtnNuevaReserva.IsEnabled = reservable;
+            BtnNuevaReserva.ToolTip = reservable
+                ? $"Crear una reserva de {Alojamientos.Nombre(alojamiento)} con entrada el {dia.Value:dd/MM/yyyy}"
+                : dia.Value < DateTime.Today
+                    ? "No se pueden crear reservas en fechas pasadas"
+                    : "El alojamiento no está libre en esa fecha";
 
             if (estado.Reserva != null)
             {
