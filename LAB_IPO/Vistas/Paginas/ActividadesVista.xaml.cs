@@ -153,6 +153,51 @@ namespace LAB_IPO.Vistas.Paginas
             Navegador?.AbrirPanelLateral(ficha);
         }
 
+        // ===== Modificar (CU-26) y dar de baja (CU-25) =====
+
+        private bool Existe(Actividad actividad)
+        {
+            if (RepositorioActividades.Actividades.Contains(actividad)) return true;
+            DialogoMensaje.Mostrar(VentanaPropietaria, "Actividad no disponible",
+                "La actividad seleccionada ya no existe. Actualiza el listado y vuelve a intentarlo.", TipoDialogo.Aviso);
+            return false;
+        }
+
+        private void Editar_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as FrameworkElement)?.DataContext is Actividad actividad && Existe(actividad))
+                Navegar(new FormularioActividadVista(actividad));
+        }
+
+        private void Eliminar_Click(object sender, RoutedEventArgs e)
+        {
+            if (!((sender as FrameworkElement)?.DataContext is Actividad a) || !Existe(a)) return;
+
+            string detalle = $"{a.DiasTexto} · {a.HorarioTexto} · {a.Area} · {a.Publico}\n"
+                           + $"Cupo: {a.CupoTexto} · Precio: {a.PrecioTexto}\n"
+                           + $"Monitores: {a.MonitoresTexto}\n\n"
+                           + "Dejará de aparecer en la programación del camping.";
+            if (!DialogoMensaje.Confirmar(VentanaPropietaria, $"¿Dar de baja «{a.Nombre}»?", detalle,
+                    "Dar de baja", "Cancelar"))
+                return;
+
+            try
+            {
+                RepositorioActividades.DarDeBaja(a);
+            }
+            catch (InvalidOperationException ex)
+            {
+                DialogoMensaje.Mostrar(VentanaPropietaria, "No se ha podido dar de baja la actividad",
+                    ex.Message + " Sus datos se conservan.", TipoDialogo.Error);
+                return;
+            }
+
+            Navegador?.CerrarPanelLateral();
+            AplicarFiltros();
+            TxtAvisoGuardado.Text = $"Actividad «{a.Nombre}» dada de baja correctamente.";
+            AvisoGuardado.Visibility = Visibility.Visible;
+        }
+
         // ===== Alta (CU-24) =====
 
         private void NuevaActividad_Click(object sender, RoutedEventArgs e)

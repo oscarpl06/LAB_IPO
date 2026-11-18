@@ -30,6 +30,10 @@ namespace LAB_IPO.Vistas.Paginas
 
         public override string OpcionMenu => "Actividades";
 
+        /// <summary>Actividad que se está modificando (CU-26), o null en un alta (CU-24).</summary>
+        private readonly Actividad _original;
+        private bool EsEdicion => _original != null;
+
         public FormularioActividadVista()
         {
             InitializeComponent();
@@ -57,6 +61,33 @@ namespace LAB_IPO.Vistas.Paginas
             }
 
             Loaded += (s, e) => TxtNombre.Focus();
+        }
+
+        /// <summary>CU-26 · El mismo formulario con los datos actuales de la actividad.</summary>
+        public FormularioActividadVista(Actividad actividad) : this()
+        {
+            _original = actividad ?? throw new ArgumentNullException(nameof(actividad));
+
+            TxtTitulo.Text = $"Editar «{actividad.Nombre}»";
+            TxtSubtitulo.Text = "Modifica el horario, las plazas, el precio, el área o la descripción de la actividad.";
+            TxtGuardar.Text = "Guardar cambios";
+            BtnGuardar.ToolTip = "Guardar los cambios de la actividad";
+            BtnCancelarFormulario.ToolTip = "Volver al listado sin guardar los cambios";
+            TxtNotaMonitores.Text = $"Monitores: {actividad.MonitoresTexto}. Se cambian desde la ficha, con «Gestionar monitores».";
+
+            TxtNombre.Text = actividad.Nombre;
+            CmbPublico.SelectedItem = actividad.Publico;
+            TxtDescripcion.Text = actividad.Descripcion ?? "";
+            foreach (var par in _dias) par.Value.IsChecked = actividad.Dias.Contains(par.Key);
+            TxtHoraInicio.Text = actividad.HoraInicio.ToString(@"hh\:mm");
+            TxtHoraFin.Text = actividad.HoraFin.ToString(@"hh\:mm");
+            TxtCupoMinimo.Text = actividad.CupoMinimo?.ToString() ?? "";
+            TxtCupoMaximo.Text = actividad.CupoMaximo.ToString();
+            TxtPrecio.Text = actividad.Precio.HasValue ? actividad.Precio.Value.ToString("0.##", Es) : "";
+            if (actividad.UnidadPrecio != null) CmbUnidadPrecio.SelectedItem = actividad.UnidadPrecio;
+            CmbArea.SelectedItem = actividad.Area;
+            TxtMateriales.Text = actividad.Materiales ?? "";
+            TxtNotas.Text = actividad.Notas ?? "";
         }
 
         // ===== Días =====
@@ -113,7 +144,7 @@ namespace LAB_IPO.Vistas.Paginas
                 Marcar(TxtNombre, errores, "Indica el nombre de la actividad.");
             else if (nombre.Length < 3)
                 Marcar(TxtNombre, errores, "El nombre de la actividad debe tener al menos 3 caracteres.");
-            else if (RepositorioActividades.Existe(nombre))
+            else if (RepositorioActividades.Existe(nombre, _original))
                 Marcar(TxtNombre, errores, $"Ya existe una actividad llamada «{nombre}».");
 
             if (CmbPublico.SelectedItem == null)
@@ -178,6 +209,12 @@ namespace LAB_IPO.Vistas.Paginas
                 return;
             }
 
+            if (EsEdicion)
+            {
+                GuardarCambios(nombre, dias, inicio.Value, fin.Value, cupoMinimo, cupoMaximo, precio);
+                return;
+            }
+
             var actividad = new Actividad
             {
                 Nombre = nombre,
@@ -199,6 +236,70 @@ namespace LAB_IPO.Vistas.Paginas
             _salidaConfirmada = true;
             Navegar(new ActividadesVista($"Actividad «{actividad.Nombre}» creada correctamente. "
                                          + "Ya puedes asignarle sus monitores.", actividad));
+        }
+
+        /// <summary>CU-26 · Pide confirmación y aplica los cambios sobre la actividad existente (RF-36).</summary>
+        private void GuardarCambios(string nombre, List<DayOfWeek> dias, TimeSpan inicio, TimeSpan fin,
+                                    int? cupoMinimo, int cupoMaximo, decimal? precio)
+        {
+            if (!HayCambiosEnEdicion)
+            {
+                DialogoMensaje.Mostrar(VentanaPropietaria, "No hay cambios que guardar",
+                    $"No has modificado ningún dato de «{_original.Nombre}».");
+                return;
+            }
+
+            if (!DialogoMensaje.Confirmar(VentanaPropietaria,
+                    $"¿Guardar los cambios de «{_original.Nombre}»?",
+                    "Se actualizará la actividad con los datos del formulario. Sus monitores no cambian.",
+                    "Guardar", "Seguir editando"))
+                return;
+
+            if (!RepositorioActividades.Actividades.Contains(_original))
+            {
+                DialogoMensaje.Mostrar(VentanaPropietaria, "No se han podido guardar los cambios",
+                    "La actividad ya no existe.", TipoDialogo.Error);
+                return;
+            }
+
+            _original.Nombre = nombre;
+            _original.Publico = (string)CmbPublico.SelectedItem;
+            _original.Descripcion = TxtDescripcion.Text.Trim();
+            _original.Dias = dias;
+            _original.HoraInicio = inicio;
+            _original.HoraFin = fin;
+            _original.CupoMinimo = cupoMinimo;
+            _original.CupoMaximo = cupoMaximo;
+            _original.Precio = precio > 0 ? precio : null;
+            _original.UnidadPrecio = precio > 0 ? (string)CmbUnidadPrecio.SelectedItem : null;
+            _original.Area = (string)CmbArea.SelectedItem;
+            _original.Materiales = TxtMateriales.Text.Trim();
+            _original.Notas = TxtNotas.Text.Trim();
+
+            _salidaConfirmada = true;
+            Navegar(new ActividadesVista($"Cambios de «{_original.Nombre}» guardados correctamente.", _original));
+        }
+
+        private bool HayCambiosEnEdicion
+        {
+            get
+            {
+                var o = _original;
+                string precioOriginal = o.Precio.HasValue ? o.Precio.Value.ToString("0.##", Es) : "";
+                return Regex.Replace(TxtNombre.Text.Trim(), @"\s+", " ") != o.Nombre
+                       || (string)CmbPublico.SelectedItem != o.Publico
+                       || TxtDescripcion.Text.Trim() != (o.Descripcion ?? "")
+                       || !DiasElegidos.OrderBy(d => d).SequenceEqual(o.Dias.OrderBy(d => d))
+                       || TxtHoraInicio.Text.Trim() != o.HoraInicio.ToString(@"hh\:mm")
+                       || TxtHoraFin.Text.Trim() != o.HoraFin.ToString(@"hh\:mm")
+                       || TxtCupoMinimo.Text.Trim() != (o.CupoMinimo?.ToString() ?? "")
+                       || TxtCupoMaximo.Text.Trim() != o.CupoMaximo.ToString()
+                       || TxtPrecio.Text.Trim().Replace('.', ',') != precioOriginal
+                       || (o.Precio.HasValue && (string)CmbUnidadPrecio.SelectedItem != o.UnidadPrecio)
+                       || (string)CmbArea.SelectedItem != o.Area
+                       || TxtMateriales.Text.Trim() != (o.Materiales ?? "")
+                       || TxtNotas.Text.Trim() != (o.Notas ?? "");
+            }
         }
 
         /// <summary>Lee una hora hh:mm (admite 9:30) dentro del horario del camping.</summary>
@@ -269,12 +370,17 @@ namespace LAB_IPO.Vistas.Paginas
         /// <summary>Si hay datos sin guardar, pide confirmación antes de abandonar el formulario (RF-36).</summary>
         public override bool PuedeSalir()
         {
-            if (_salidaConfirmada || !HayDatos) return true;
+            if (_salidaConfirmada || !(EsEdicion ? HayCambiosEnEdicion : HayDatos)) return true;
 
-            _salidaConfirmada = DialogoMensaje.Confirmar(VentanaPropietaria,
-                "¿Descartar la nueva actividad?",
-                "Se perderán los datos que has introducido en el formulario.",
-                "Descartar", "Seguir editando");
+            _salidaConfirmada = EsEdicion
+                ? DialogoMensaje.Confirmar(VentanaPropietaria,
+                    $"¿Descartar los cambios de «{_original.Nombre}»?",
+                    "La actividad se quedará como estaba.",
+                    "Descartar", "Seguir editando")
+                : DialogoMensaje.Confirmar(VentanaPropietaria,
+                    "¿Descartar la nueva actividad?",
+                    "Se perderán los datos que has introducido en el formulario.",
+                    "Descartar", "Seguir editando");
             return _salidaConfirmada;
         }
     }
