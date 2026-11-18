@@ -17,6 +17,19 @@
 
     <!-- CU-06 · Ficha de la parcela (RF-04, RF-05), en el panel lateral de la ventana principal -->
     <DockPanel>
+        <!-- Pie: acceso directo a la edición (CU-05) -->
+        <Border DockPanel.Dock="Bottom" BorderBrush="{StaticResource Pincel.Borde}" BorderThickness="0,1,0,0"
+                Padding="26,14">
+            <Button x:Name="BtnEditarParcela" Style="{StaticResource Boton.Primario}" HorizontalAlignment="Stretch"
+                    ToolTip="Modificar los datos de esta parcela" Click="Editar_Click">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource Icono}" Text="&#xE70F;" FontSize="14" Margin="0,0,8,0"
+                               Foreground="{StaticResource Pincel.Blanco}"/>
+                    <TextBlock Text="Editar parcela"/>
+                </StackPanel>
+            </Button>
+        </Border>
+
         <!-- Cabecera -->
         <Grid DockPanel.Dock="Top" Margin="26,22,16,0">
             <StackPanel>

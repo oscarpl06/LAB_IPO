@@ -382,7 +382,7 @@
                                             <Button Style="{StaticResource Boton.Fila}" Content="Ver" Margin="0,0,6,0"
                                                     ToolTip="Ver la ficha completa de la parcela" Click="Ver_Click"/>
                                             <Button Style="{StaticResource Boton.Fila}" Content="Editar" Margin="0,0,6,0"
-                                                    IsEnabled="False" ToolTip="Sección en desarrollo"/>
+                                                    ToolTip="Modificar los datos de la parcela" Click="EditarParcela_Click"/>
                                             <Button Style="{StaticResource Boton.Fila}" Content="Eliminar"
                                                     IsEnabled="False" ToolTip="Sección en desarrollo"/>
                                         </StackPanel>
