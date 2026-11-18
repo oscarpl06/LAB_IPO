@@ -24,9 +24,21 @@
                  ToolTip="{Binding ToolTip, ElementName=Raiz}"
                  TextChanged="CajaClaveVisible_TextChanged"/>
 
-        <ToggleButton x:Name="BtnVerClave" Style="{StaticResource Boton.VerClave}"
-                      HorizontalAlignment="Right" Margin="0,0,6,0"
-                      ToolTip="Mostrar la clave"
-                      Checked="BtnVerClave_Cambiado" Unchecked="BtnVerClave_Cambiado"/>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,6,0">
+            <!-- Aviso de Bloq Mayús: solo aparece mientras se escribe la clave con las mayúsculas fijadas -->
+            <Border x:Name="AvisoMayusculas" Background="{StaticResource Pincel.AvisoFondo}" CornerRadius="8"
+                    Padding="8,3" Margin="0,0,6,0" VerticalAlignment="Center" Visibility="Collapsed"
+                    ToolTip="El bloqueo de mayúsculas está activado. La clave distingue mayúsculas y minúsculas.">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource Icono}" Text="{StaticResource Icono.Aviso}" FontSize="12"
+                               Foreground="{StaticResource Pincel.Aviso}"/>
+                    <TextBlock Text="Bloq Mayús activado" FontSize="12" FontWeight="SemiBold" Margin="6,0,0,0"
+                               Foreground="{StaticResource Pincel.Aviso}" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+            <ToggleButton x:Name="BtnVerClave" Style="{StaticResource Boton.VerClave}"
+                          ToolTip="Mostrar la clave"
+                          Checked="BtnVerClave_Cambiado" Unchecked="BtnVerClave_Cambiado"/>
+        </StackPanel>
     </Grid>
 </UserControl>

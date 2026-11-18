@@ -7,6 +7,7 @@
                   WindowStartupLocation="CenterScreen"
                   Icon="/LAB_IPO;component/Recursos/app.ico">
 
+    <Grid>
     <!-- PG2 · Ventana principal: cabecera con los datos del usuario, menú lateral y contenido -->
     <Grid Margin="12,0,12,12">
         <Grid.RowDefinitions>
@@ -108,5 +109,20 @@
             <!-- Contenido: aquí se muestra la vista de cada sección -->
             <ContentControl x:Name="Contenido" Grid.Column="2" Margin="0,2,4,0" Focusable="False"/>
         </Grid>
+    </Grid>
+
+    <!-- ===== Panel lateral: ocupa toda la altura del borde derecho de la ventana ===== -->
+    <Grid x:Name="CapaPanelLateral" Visibility="Collapsed">
+        <!-- Velo que oscurece el resto; al pulsarlo se cierra el panel -->
+        <Border x:Name="VeloPanel" Background="#661E2B23" MouseLeftButtonDown="Velo_MouseLeftButtonDown"/>
+        <Border x:Name="PanelLateral" Width="420" HorizontalAlignment="Right"
+                Background="{StaticResource Pincel.Blanco}" BorderBrush="{StaticResource Pincel.Borde}"
+                BorderThickness="1,0,0,0" Effect="{StaticResource Sombra.Elevada}">
+            <Border.RenderTransform>
+                <TranslateTransform x:Name="DesplazamientoPanel"/>
+            </Border.RenderTransform>
+            <ContentControl x:Name="ContenidoPanelLateral" Focusable="False"/>
+        </Border>
+    </Grid>
     </Grid>
 </comp:VentanaBase>

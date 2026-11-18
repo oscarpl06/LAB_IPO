@@ -64,14 +64,6 @@ namespace LAB_IPO.Vistas.Paginas
             CmbFiltroEstado.SelectedIndex = 0;
 
             ActualizarRecuento();
-            PreviewKeyDown += (s, e) =>
-            {
-                if (e.Key == Key.Escape && PanelFicha.Visibility == Visibility.Visible)
-                {
-                    CerrarFicha();
-                    e.Handled = true;
-                }
-            };
 
             if (mostrarBungalows)
                 TabBungalows.IsChecked = true;
@@ -222,7 +214,8 @@ namespace LAB_IPO.Vistas.Paginas
 
             _parcelaEnFicha = parcela;
             ListaParcelas.SelectedItem = parcela;   // resalta su fila
-            MostrarFicha(parcela);
+            // La ficha se abre en el panel lateral de la ventana; al cerrarse se quita el resaltado.
+            Navegador?.AbrirPanelLateral(new FichaParcela(parcela), alCerrar: QuitarResaltado);
         }
 
         // Pulsar una fila o moverse con las flechas no abre la ficha:
@@ -233,35 +226,16 @@ namespace LAB_IPO.Vistas.Paginas
                 ListaParcelas.SelectedItem = _parcelaEnFicha;
         }
 
-        private void MostrarFicha(Parcela parcela)
-        {
-            bool yaVisible = PanelFicha.Visibility == Visibility.Visible;
-            PanelFicha.DataContext = parcela;
-            PanelFicha.Visibility = Visibility.Visible;
-
-            if (!yaVisible)
-            {
-                var duracion = TimeSpan.FromMilliseconds(220);
-                var suavizado = new CubicEase { EasingMode = EasingMode.EaseOut };
-                DesplazamientoFicha.BeginAnimation(System.Windows.Media.TranslateTransform.XProperty,
-                    new DoubleAnimation(40, 0, duracion) { EasingFunction = suavizado });
-                PanelFicha.BeginAnimation(OpacityProperty, new DoubleAnimation(0, 1, duracion));
-            }
-        }
-
-        private void CerrarFicha_Click(object sender, RoutedEventArgs e) => CerrarFicha();
-
-        private void CerrarFicha()
+        private void QuitarResaltado()
         {
             _parcelaEnFicha = null;
             ListaParcelas.SelectedItem = null;
-            OcultarFicha();
         }
 
-        private void OcultarFicha()
+        private void CerrarFicha()
         {
-            PanelFicha.Visibility = Visibility.Collapsed;
-            PanelFicha.DataContext = null;
+            Navegador?.CerrarPanelLateral();
+            QuitarResaltado();
         }
 
         // ===== Alta (CU-03) =====

@@ -4,6 +4,9 @@ using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using LAB_IPO.Componentes;
 using LAB_IPO.Servicios;
@@ -56,8 +59,61 @@ namespace LAB_IPO.Vistas
                 return;
             }
 
+            CerrarPanelLateral();
             Contenido.Content = vista;
             MarcarMenu(vista.OpcionMenu);
+        }
+
+        // ===== Panel lateral (fichas de consulta) =====
+
+        private Action _alCerrarPanel;
+
+        public void AbrirPanelLateral(FrameworkElement contenido, Action alCerrar = null)
+        {
+            bool yaAbierto = CapaPanelLateral.Visibility == Visibility.Visible;
+            var anterior = _alCerrarPanel;
+
+            _alCerrarPanel = alCerrar;
+            ContenidoPanelLateral.Content = contenido;
+            CapaPanelLateral.Visibility = Visibility.Visible;
+
+            if (yaAbierto)
+            {
+                // Se sustituye el contenido sin animar; avisa al anterior de que se ha cerrado.
+                if (!ReferenceEquals(anterior, alCerrar)) anterior?.Invoke();
+                return;
+            }
+
+            var duracion = TimeSpan.FromMilliseconds(240);
+            var suavizado = new CubicEase { EasingMode = EasingMode.EaseOut };
+            DesplazamientoPanel.BeginAnimation(TranslateTransform.XProperty,
+                new DoubleAnimation(PanelLateral.Width, 0, duracion) { EasingFunction = suavizado });
+            VeloPanel.BeginAnimation(OpacityProperty, new DoubleAnimation(0, 1, duracion));
+        }
+
+        public void CerrarPanelLateral()
+        {
+            if (CapaPanelLateral.Visibility != Visibility.Visible) return;
+
+            CapaPanelLateral.Visibility = Visibility.Collapsed;
+            ContenidoPanelLateral.Content = null;
+
+            var alCerrar = _alCerrarPanel;
+            _alCerrarPanel = null;
+            alCerrar?.Invoke();
+        }
+
+        private void Velo_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) => CerrarPanelLateral();
+
+        protected override void OnPreviewKeyDown(KeyEventArgs e)
+        {
+            if (e.Key == Key.Escape && CapaPanelLateral.Visibility == Visibility.Visible)
+            {
+                CerrarPanelLateral();
+                e.Handled = true;
+                return;
+            }
+            base.OnPreviewKeyDown(e);
         }
 
         // Evita que marcar el menú desde el código vuelva a navegar.

@@ -74,6 +74,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Vistas\Paginas\FichaParcela.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Vistas\Paginas\FormularioParcelaVista.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -151,6 +155,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Modelos\Bungalow.cs" />
+    <Compile Include="Vistas\Paginas\FichaParcela.xaml.cs">
+      <DependentUpon>FichaParcela.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Modelos\Parcela.cs" />
     <Compile Include="Modelos\TipoParcela.cs" />
     <Compile Include="Componentes\CampoAyudante.cs" />

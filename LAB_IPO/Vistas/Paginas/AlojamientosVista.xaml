@@ -42,15 +42,6 @@
             </Setter>
         </Style>
 
-        <!-- Línea de dato en la ficha: etiqueta y valor -->
-        <Style x:Key="Ficha.Etiqueta" TargetType="TextBlock" BasedOn="{StaticResource Texto.Nota}">
-            <Setter Property="Width" Value="92"/>
-            <Setter Property="VerticalAlignment" Value="Top"/>
-        </Style>
-        <Style x:Key="Ficha.Valor" TargetType="TextBlock" BasedOn="{StaticResource Texto.Base}">
-            <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="VerticalAlignment" Value="Top"/>
-        </Style>
     </comp:VistaBase.Resources>
 
     <!-- PG3 · Alojamientos (listado de parcelas) -->
@@ -363,106 +354,6 @@
                                     Margin="0,10,0,0" Click="Limpiar_Click"/>
                         </StackPanel>
                     </Grid>
-                </DockPanel>
-            </Border>
-
-            <!-- ===== Ficha de la parcela (CU-06) ===== -->
-            <Border x:Name="PanelFicha" Width="370" HorizontalAlignment="Right" Margin="0,-1,-1,-1"
-                    Background="{StaticResource Pincel.Blanco}" BorderBrush="{StaticResource Pincel.Borde}"
-                    BorderThickness="1" CornerRadius="14" Effect="{StaticResource Sombra.Elevada}"
-                    Visibility="Collapsed">
-                <Border.RenderTransform>
-                    <TranslateTransform x:Name="DesplazamientoFicha"/>
-                </Border.RenderTransform>
-                <DockPanel>
-                    <!-- Cabecera de la ficha -->
-                    <Grid DockPanel.Dock="Top" Margin="20,16,12,0">
-                        <StackPanel>
-                            <TextBlock Text="FICHA DE LA PARCELA" Style="{StaticResource Texto.Rotulo}"/>
-                            <TextBlock Text="{Binding Identificador, StringFormat='Parcela {0}'}"
-                                       Style="{StaticResource Texto.TituloDialogo}" FontSize="20" Margin="0,4,0,0"/>
-                        </StackPanel>
-                        <Button x:Name="BtnCerrarFicha" Style="{StaticResource Boton.Ventana}" Width="34" Height="34"
-                                HorizontalAlignment="Right" VerticalAlignment="Top" Focusable="True"
-                                Content="{StaticResource Icono.Cerrar}" ToolTip="Cerrar la ficha (Esc)"
-                                Click="CerrarFicha_Click"/>
-                    </Grid>
-
-                    <ScrollViewer VerticalScrollBarVisibility="Auto" Focusable="False" Margin="0,12,0,0">
-                        <StackPanel Margin="20,0,20,20">
-                            <!-- Foto grande -->
-                            <Grid Height="150">
-                                <Border CornerRadius="12" Background="{StaticResource Pincel.Salvia100}">
-                                    <StackPanel VerticalAlignment="Center">
-                                        <TextBlock Style="{StaticResource Icono}" Text="&#xE91B;" FontSize="28"
-                                                   Foreground="{StaticResource Pincel.Salvia500}"/>
-                                        <TextBlock Text="Esta parcela no tiene foto" Style="{StaticResource Texto.Nota}"
-                                                   HorizontalAlignment="Center" Margin="0,6,0,0"/>
-                                    </StackPanel>
-                                </Border>
-                                <Border CornerRadius="12">
-                                    <Border.Background>
-                                        <ImageBrush Stretch="UniformToFill"
-                                                    ImageSource="{Binding RutaFoto, Converter={StaticResource RutaImagen}, ConverterParameter=800}"/>
-                                    </Border.Background>
-                                </Border>
-                                <!-- Estado sobre la foto -->
-                                <Border Style="{StaticResource Chip.Estado}" VerticalAlignment="Top" Margin="12">
-                                    <TextBlock Text="{Binding EstadoTexto}" Style="{StaticResource Chip.EstadoTexto}"/>
-                                </Border>
-                            </Grid>
-
-                            <!-- Datos generales (RF-04) -->
-                            <StackPanel Margin="0,18,0,0">
-                                <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                                    <TextBlock Text="Tipo" Style="{StaticResource Ficha.Etiqueta}"/>
-                                    <TextBlock Text="{Binding Tipo.Nombre}" Style="{StaticResource Ficha.Valor}"/>
-                                </StackPanel>
-                                <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                                    <TextBlock Text="Tamaño" Style="{StaticResource Ficha.Etiqueta}"/>
-                                    <TextBlock Text="{Binding TamanoTexto}" Style="{StaticResource Ficha.Valor}"/>
-                                </StackPanel>
-                                <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-                                    <TextBlock Text="Ubicación" Style="{StaticResource Ficha.Etiqueta}"/>
-                                    <TextBlock Text="{Binding Ubicacion}" Style="{StaticResource Ficha.Valor}"/>
-                                </StackPanel>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="Precio/noche" Style="{StaticResource Ficha.Etiqueta}"/>
-                                    <TextBlock Text="{Binding Tipo.TarifasTexto}" Style="{StaticResource Ficha.Valor}"
-                                               FontWeight="Normal" Width="226"/>
-                                </StackPanel>
-                            </StackPanel>
-
-                            <Border Style="{StaticResource Separador}" Margin="0,16,0,14"/>
-
-                            <!-- Servicios y características (RF-05) -->
-                            <TextBlock Text="Servicios y características" Style="{StaticResource Texto.Etiqueta}" Margin="0,0,0,8"/>
-                            <ItemsControl ItemsSource="{Binding Servicios}">
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <StackPanel Orientation="Horizontal" Margin="0,4">
-                                            <Border x:Name="Marca" Width="20" Height="20" CornerRadius="10"
-                                                    Background="{StaticResource Pincel.Salvia100}">
-                                                <TextBlock x:Name="Glifo" Style="{StaticResource Icono}" FontSize="10"
-                                                           Text="{StaticResource Icono.Correcto}"
-                                                           Foreground="{StaticResource Pincel.Bosque700}"/>
-                                            </Border>
-                                            <TextBlock x:Name="Nombre" Text="{Binding Nombre}" Style="{StaticResource Texto.Base}"
-                                                       Margin="10,0,0,0" VerticalAlignment="Center"/>
-                                        </StackPanel>
-                                        <DataTemplate.Triggers>
-                                            <DataTrigger Binding="{Binding Disponible}" Value="False">
-                                                <Setter TargetName="Marca" Property="Background" Value="{StaticResource Pincel.Beige100}"/>
-                                                <Setter TargetName="Glifo" Property="Text" Value="&#xE711;"/>
-                                                <Setter TargetName="Glifo" Property="Foreground" Value="{StaticResource Pincel.TextoTenue}"/>
-                                                <Setter TargetName="Nombre" Property="Foreground" Value="{StaticResource Pincel.TextoTenue}"/>
-                                            </DataTrigger>
-                                        </DataTemplate.Triggers>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                        </StackPanel>
-                    </ScrollViewer>
                 </DockPanel>
             </Border>
         </Grid>
