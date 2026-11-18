@@ -44,6 +44,24 @@ namespace LAB_IPO.Modelos
             ? $"Estancia mínima: {EstanciaMinima} {(EstanciaMinima == 1 ? "noche" : "noches")}"
             : "Sin estancia mínima";
 
+        /// <summary>Estancia mínima para la ficha: "2 noches" o "Sin mínimo".</summary>
+        public string EstanciaFichaTexto => EstanciaMinima.HasValue
+            ? $"{EstanciaMinima} {(EstanciaMinima == 1 ? "noche" : "noches")}"
+            : "Sin mínimo";
+
+        public string DescripcionTexto => string.IsNullOrWhiteSpace(Descripcion)
+            ? "Este bungalow todavía no tiene descripción."
+            : Descripcion;
+
+        /// <summary>Los cuatro elementos de equipamiento, indicando si el bungalow los tiene (RF-09).</summary>
+        public IEnumerable<ServicioParcela> Equipamiento => new[]
+        {
+            new ServicioParcela("Menaje", Menaje),
+            new ServicioParcela("Microondas", Microondas),
+            new ServicioParcela("Ropa de cama y toallas", RopaCamaToallas),
+            new ServicioParcela("Wi-Fi", WiFi)
+        };
+
         public string EquipamientoTexto
         {
             get
