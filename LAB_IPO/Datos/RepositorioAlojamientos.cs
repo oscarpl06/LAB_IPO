@@ -92,6 +92,16 @@ namespace LAB_IPO.Datos
             Parcelas.Add(parcela);
         }
 
+        /// <summary>CU-04 · Da de baja la parcela si no está ocupada ni tiene reservas vigentes.</summary>
+        public static void DarDeBajaParcela(Parcela parcela)
+        {
+            if (parcela == null || !Parcelas.Contains(parcela))
+                throw new InvalidOperationException("La parcela ya no existe.");
+            string motivo = RepositorioReservas.MotivoNoBaja(parcela);
+            if (motivo != null) throw new InvalidOperationException(motivo);
+            Parcelas.Remove(parcela);
+        }
+
         // ===== Bungalows =====
 
         private const string RutaFotosBungalows = "pack://application:,,,/LAB_IPO;component/Recursos/Fotos/Bungalows/";
@@ -145,6 +155,16 @@ namespace LAB_IPO.Datos
                 .DefaultIfEmpty(0)
                 .Max();
             return $"Bungalow {maximo + 1:00}";
+        }
+
+        /// <summary>CU-08 · Da de baja el bungalow si no está ocupado ni tiene reservas vigentes.</summary>
+        public static void DarDeBajaBungalow(Bungalow bungalow)
+        {
+            if (bungalow == null || !Bungalows.Contains(bungalow))
+                throw new InvalidOperationException("El bungalow ya no existe.");
+            string motivo = RepositorioReservas.MotivoNoBaja(bungalow);
+            if (motivo != null) throw new InvalidOperationException(motivo);
+            Bungalows.Remove(bungalow);
         }
 
         public static void AgregarBungalow(Bungalow bungalow)

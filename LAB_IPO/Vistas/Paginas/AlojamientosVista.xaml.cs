@@ -368,6 +368,83 @@ namespace LAB_IPO.Vistas.Paginas
         // ===== Alta (CU-03) =====
 
         // Abre el alta de parcela (CU-03) o de bungaló (CU-07) según la pestaña.
+        // ===== Dar de baja (CU-04 parcela, CU-08 bungalow) =====
+
+        private void EliminarParcela_Click(object sender, RoutedEventArgs e)
+        {
+            if (!((sender as FrameworkElement)?.DataContext is Parcela parcela)) return;
+
+            string resumen = $"{parcela.Tipo?.Nombre} · {parcela.TamanoTexto} · {parcela.Ubicacion}\n"
+                           + $"Servicios: {parcela.ServiciosTexto}\nEstado: {parcela.EstadoTexto}";
+            DarDeBaja(parcela, $"Parcela {parcela.Identificador}", "la parcela", resumen,
+                () => RepositorioAlojamientos.DarDeBajaParcela(parcela),
+                RepositorioAlojamientos.Parcelas.Contains(parcela));
+        }
+
+        private void EliminarBungalow_Click(object sender, RoutedEventArgs e)
+        {
+            if (!((sender as FrameworkElement)?.DataContext is Bungalow bungalow)) return;
+
+            string resumen = $"{bungalow.TamanoTexto} · {bungalow.CapacidadTexto} · {bungalow.PrecioTexto}/noche\n"
+                           + $"Fotos: {bungalow.FotosTexto}\nEstado: {bungalow.EstadoTexto}";
+            DarDeBaja(bungalow, bungalow.Nombre, "el bungalow", resumen,
+                () => RepositorioAlojamientos.DarDeBajaBungalow(bungalow),
+                RepositorioAlojamientos.Bungalows.Contains(bungalow));
+        }
+
+        /// <summary>
+        /// Flujo común de baja: comprueba que exista y que se pueda dar de baja, muestra sus datos
+        /// para confirmar (RF-36) y, si se confirma, lo da de baja e informa del resultado.
+        /// </summary>
+        private void DarDeBaja(object alojamiento, string nombre, string articulo, string resumen,
+                               Action darDeBaja, bool existe)
+        {
+            if (!existe)
+            {
+                DialogoMensaje.Mostrar(VentanaPropietaria, "Alojamiento no disponible",
+                    $"{nombre} ya no existe. Actualiza el listado y vuelve a intentarlo.", TipoDialogo.Aviso);
+                return;
+            }
+
+            string motivo = RepositorioReservas.MotivoNoBaja(alojamiento);
+            if (motivo != null)
+            {
+                DialogoMensaje.Mostrar(VentanaPropietaria, $"No se puede dar de baja {articulo}",
+                    motivo + $"\n\nCancela o espera a que terminen sus reservas antes de dar{(alojamiento is Parcela ? "la" : "lo")} de baja. "
+                           + "Sus datos se conservan.",
+                    TipoDialogo.Aviso);
+                return;
+            }
+
+            bool confirmar = DialogoMensaje.Confirmar(VentanaPropietaria,
+                $"¿Dar de baja {articulo} {QuitarPrefijo(nombre)}?",
+                resumen + $"\n\nDejará de aparecer en la gestión ordinaria del camping.",
+                "Dar de baja", "Cancelar");
+            if (!confirmar) return;
+
+            try
+            {
+                darDeBaja();
+            }
+            catch (InvalidOperationException ex)
+            {
+                DialogoMensaje.Mostrar(VentanaPropietaria, $"No se ha podido dar de baja {articulo}",
+                    ex.Message + " Sus datos se conservan.", TipoDialogo.Error);
+                return;
+            }
+
+            CerrarFicha();
+            AplicarFiltros();
+            AplicarFiltrosBungalows();
+            TxtAvisoGuardado.Text = $"{nombre} dado de baja correctamente.";
+            if (alojamiento is Parcela) TxtAvisoGuardado.Text = $"{nombre} dada de baja correctamente.";
+            AvisoGuardado.Visibility = Visibility.Visible;
+        }
+
+        // «Parcela P-03» -> «P-03» y «Bungalow 04» -> «04», para no repetir el tipo en la pregunta.
+        private static string QuitarPrefijo(string nombre) =>
+            nombre.StartsWith("Parcela ") ? nombre.Substring("Parcela ".Length) : nombre.Replace("Bungalow ", "");
+
         private void NuevaParcela_Click(object sender, RoutedEventArgs e)
         {
             if (MostrandoBungalows)
