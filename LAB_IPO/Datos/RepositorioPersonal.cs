@@ -75,10 +75,33 @@ namespace LAB_IPO.Datos
         };
 
         /// <summary>True si algún empleado ya usa alguno de esos correos.</summary>
-        public static bool ExisteCorreo(string correo) =>
-            Empleados.Any(e => (e.Correos ?? "")
+        /// <param name="excluir">Al modificar un empleado (CU-23), sus propios correos no cuentan como repetidos.</param>
+        public static bool ExisteCorreo(string correo, Empleado excluir = null) =>
+            Empleados.Where(e => e != excluir).Any(e => (e.Correos ?? "")
                 .Split(',')
                 .Any(c => string.Equals(c.Trim(), correo?.Trim(), StringComparison.OrdinalIgnoreCase)));
+
+        /// <summary>Actividades de las que el empleado es monitor.</summary>
+        public static System.Collections.Generic.List<Actividad> ActividadesDe(Empleado empleado) =>
+            RepositorioActividades.Actividades.Where(a => a.Monitores.Contains(empleado)).ToList();
+
+        /// <summary>
+        /// CU-21 · Da de baja al empleado: deja de estar activo (sus datos se conservan) y deja de ser
+        /// monitor de las actividades que llevaba. Devuelve esas actividades.
+        /// </summary>
+        public static System.Collections.Generic.List<Actividad> DarDeBaja(Empleado empleado)
+        {
+            if (empleado == null || !Empleados.Contains(empleado))
+                throw new InvalidOperationException("El empleado ya no existe en el registro de personal.");
+            if (!empleado.Activo)
+                throw new InvalidOperationException($"{empleado.NombreCompleto} ya está de baja.");
+
+            var actividades = ActividadesDe(empleado);
+            foreach (var actividad in actividades)
+                actividad.Monitores = actividad.Monitores.Where(m => m != empleado).ToList();
+            empleado.Activo = false;
+            return actividades;
+        }
 
         public static void AgregarEmpleado(Empleado empleado)
         {

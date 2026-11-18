@@ -44,6 +44,10 @@ namespace LAB_IPO.Modelos
         public string RestriccionesTexto => Vacio(Restricciones, "Sin restricciones registradas");
         public string EstadoTexto => Activo ? "Activo" : "De baja";
 
+        public string AyudaBaja => Activo
+            ? "Dar de baja al empleado (se pedirá confirmación)"
+            : "El empleado ya está de baja";
+
         private static string Lista(string texto) =>
             string.Join("\n", (texto ?? "").Split(',')
                 .Select(t => t.Trim()).Where(t => t.Length > 0));

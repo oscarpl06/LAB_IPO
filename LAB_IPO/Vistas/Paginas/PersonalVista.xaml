@@ -150,9 +150,11 @@
                                             <Button Style="{StaticResource Boton.Fila}" Content="Ver" Margin="0,0,6,0"
                                                     ToolTip="Ver la ficha completa del empleado" Click="Ver_Click"/>
                                             <Button Style="{StaticResource Boton.Fila}" Content="Editar" Margin="0,0,6,0"
-                                                    IsEnabled="False" ToolTip="Sección en desarrollo"/>
+                                                    ToolTip="Modificar los datos del empleado" Click="Editar_Click"/>
                                             <Button Style="{StaticResource Boton.Fila}" Content="Dar de baja"
-                                                    IsEnabled="False" ToolTip="Sección en desarrollo"/>
+                                                    IsEnabled="{Binding Activo, Mode=OneWay}"
+                                                    ToolTipService.ShowOnDisabled="True"
+                                                    ToolTip="{Binding AyudaBaja}" Click="DarDeBaja_Click"/>
                                         </StackPanel>
                                     </Grid>
                                 </Border>

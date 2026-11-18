@@ -19,6 +19,13 @@ namespace LAB_IPO.Vistas.Paginas
             Foto.Foto = RutaImagenConverter.Cargar(empleado.RutaFoto, 300);
         }
 
+        // CU-23 · Abre el formulario en modo edición; al navegar, la ventana cierra el panel lateral.
+        private void Editar_Click(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is Empleado empleado)
+                (Window.GetWindow(this) as INavegador)?.Navegar(new FormularioEmpleadoVista(empleado));
+        }
+
         private void Cerrar_Click(object sender, RoutedEventArgs e)
         {
             (Window.GetWindow(this) as INavegador)?.CerrarPanelLateral();
