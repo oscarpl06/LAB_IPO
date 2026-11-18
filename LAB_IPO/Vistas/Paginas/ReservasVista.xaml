@@ -1,0 +1,213 @@
+<comp:VistaBase x:Class="LAB_IPO.Vistas.Paginas.ReservasVista"
+                xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                xmlns:comp="clr-namespace:LAB_IPO.Componentes">
+
+    <comp:VistaBase.Resources>
+        <GridLength x:Key="Col.Localizador">92</GridLength>
+        <GridLength x:Key="Col.Alojamiento">140</GridLength>
+        <GridLength x:Key="Col.Fechas">124</GridLength>
+        <GridLength x:Key="Col.Personas">56</GridLength>
+        <GridLength x:Key="Col.Estado">124</GridLength>
+        <GridLength x:Key="Col.Acciones">228</GridLength>
+    </comp:VistaBase.Resources>
+
+    <!-- PG10 · Reservas (CU-17) -->
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Top">
+            <TextBlock Text="Reservas" Style="{StaticResource Texto.TituloSeccion}"/>
+            <TextBlock Text="Consulta, filtra y gestiona las estancias del camping"
+                       Style="{StaticResource Texto.Secundario}" Margin="0,6,0,0"/>
+            <Border Style="{StaticResource Separador}" Margin="0,14,0,12"/>
+
+            <!-- Filtros de búsqueda -->
+            <GroupBox Style="{StaticResource Grupo}" Header="Filtros de búsqueda" Padding="20,10,20,14">
+                <StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="180"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="140"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="140"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Buscar" Style="{StaticResource Texto.Etiqueta}" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                        <TextBox x:Name="TxtBuscar" Grid.Column="1" Style="{StaticResource Campo.Texto}" Height="34"
+                                 comp:CampoAyudante.TextoEjemplo="Nombre, localizador o teléfono"
+                                 ToolTip="Escribe parte del nombre del titular, del localizador o del teléfono y pulsa Intro"
+                                 KeyDown="Buscar_KeyDown"/>
+                        <TextBlock Grid.Column="2" Text="Estado" Style="{StaticResource Texto.Etiqueta}"
+                                   VerticalAlignment="Center" Margin="16,0,10,0"/>
+                        <ComboBox x:Name="CmbFiltroEstado" Grid.Column="3" Style="{StaticResource Campo.Desplegable}"
+                                  Height="34" ToolTip="Mostrar solo las reservas con ese estado"/>
+                        <TextBlock Grid.Column="4" Text="Desde" Style="{StaticResource Texto.Etiqueta}"
+                                   VerticalAlignment="Center" Margin="16,0,10,0"/>
+                        <comp:CampoFecha x:Name="FechaDesde" Grid.Column="5" Height="34"
+                                         ToolTip="Reservas con estancia a partir de esta fecha (dd/mm/aaaa)"/>
+                        <TextBlock Grid.Column="6" Text="Hasta" Style="{StaticResource Texto.Etiqueta}"
+                                   VerticalAlignment="Center" Margin="16,0,10,0"/>
+                        <comp:CampoFecha x:Name="FechaHasta" Grid.Column="7" Height="34"
+                                         ToolTip="Reservas con estancia hasta esta fecha (dd/mm/aaaa)"/>
+                    </Grid>
+                    <Grid Margin="0,12,0,0">
+                        <StackPanel x:Name="PanelErrorFiltro" Orientation="Horizontal" VerticalAlignment="Center"
+                                    Visibility="Collapsed">
+                            <TextBlock Style="{StaticResource Icono}" Text="{StaticResource Icono.Error}" FontSize="13"
+                                       Foreground="{StaticResource Pincel.Error}" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                            <TextBlock x:Name="TxtErrorFiltro" Style="{StaticResource Texto.Base}"
+                                       Foreground="{StaticResource Pincel.Error}" VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <Button x:Name="BtnFiltrar" Style="{StaticResource Boton.SecundarioPequeno}" Content="Filtrar"
+                                    Height="34" Margin="0,0,8,0" ToolTip="Aplicar la búsqueda y los filtros al listado"
+                                    Click="Filtrar_Click"/>
+                            <Button x:Name="BtnLimpiar" Style="{StaticResource Boton.SecundarioPequeno}" Content="Limpiar"
+                                    Height="34" ToolTip="Quitar los filtros y mostrar todas las reservas" Click="Limpiar_Click"/>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </GroupBox>
+
+            <!-- Recuento y alta -->
+            <Grid Margin="0,16,0,10">
+                <TextBlock x:Name="TxtRecuento" Style="{StaticResource Texto.Secundario}" VerticalAlignment="Center"/>
+                <Button x:Name="BtnNuevaReserva" Style="{StaticResource Boton.Primario}" MinWidth="200"
+                        HorizontalAlignment="Right" ToolTip="Registrar una reserva nueva" Click="NuevaReserva_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Style="{StaticResource Icono}" Text="&#xE710;" FontSize="13" Margin="0,0,8,0"
+                                   Foreground="{StaticResource Pincel.Blanco}"/>
+                        <TextBlock Text="Nueva reserva"/>
+                    </StackPanel>
+                </Button>
+            </Grid>
+
+            <!-- Aviso de reserva creada (CU-16) -->
+            <Border x:Name="AvisoGuardado" Background="{StaticResource Pincel.Salvia100}" CornerRadius="10"
+                    BorderBrush="{StaticResource Pincel.Salvia200}" BorderThickness="1"
+                    Padding="14,10" Margin="0,0,0,10" Visibility="Collapsed">
+                <StackPanel Orientation="Horizontal">
+                    <Border Width="22" Height="22" CornerRadius="11" Background="{StaticResource Pincel.Bosque700}">
+                        <TextBlock Style="{StaticResource Icono}" Text="{StaticResource Icono.Correcto}" FontSize="11"
+                                   Foreground="{StaticResource Pincel.Blanco}"/>
+                    </Border>
+                    <TextBlock x:Name="TxtAvisoGuardado" Style="{StaticResource Texto.Base}" FontWeight="SemiBold"
+                               Foreground="{StaticResource Pincel.Bosque800}" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Margin="0,12,0,0">
+            <TextBlock Style="{StaticResource Icono}" Text="{StaticResource Icono.Info}" FontSize="13"
+                       Foreground="{StaticResource Pincel.Info}" Margin="0,0,8,0" VerticalAlignment="Center"/>
+            <TextBlock Style="{StaticResource Texto.Nota}" VerticalAlignment="Center"
+                       Text="Al cancelar una reserva se solicitará confirmación antes de cambiar su estado."/>
+        </StackPanel>
+
+        <!-- Tabla de reservas -->
+        <Border Style="{StaticResource Tarjeta}" CornerRadius="14">
+            <DockPanel>
+                <Border DockPanel.Dock="Top" Background="{StaticResource Pincel.Beige100}" CornerRadius="14,14,0,0"
+                        BorderBrush="{StaticResource Pincel.Borde}" BorderThickness="0,0,0,1" Padding="14,0" Height="40">
+                    <Grid>
+                        <Grid.Resources>
+                            <Style TargetType="TextBlock" BasedOn="{StaticResource Texto.Nota}">
+                                <Setter Property="FontWeight" Value="SemiBold"/>
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                <Setter Property="Foreground" Value="{StaticResource Pincel.TextoSecundario}"/>
+                            </Style>
+                        </Grid.Resources>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="{StaticResource Col.Localizador}"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="{StaticResource Col.Alojamiento}"/>
+                            <ColumnDefinition Width="{StaticResource Col.Fechas}"/>
+                            <ColumnDefinition Width="{StaticResource Col.Personas}"/>
+                            <ColumnDefinition Width="{StaticResource Col.Estado}"/>
+                            <ColumnDefinition Width="{StaticResource Col.Acciones}"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="Localizador"/>
+                        <TextBlock Grid.Column="1" Text="Titular"/>
+                        <TextBlock Grid.Column="2" Text="Alojamiento"/>
+                        <TextBlock Grid.Column="3" Text="Entrada / salida"/>
+                        <TextBlock Grid.Column="4" Text="Pers."/>
+                        <TextBlock Grid.Column="5" Text="Estado"/>
+                        <TextBlock Grid.Column="6" Text="Acciones"/>
+                    </Grid>
+                </Border>
+
+                <Grid>
+                    <ScrollViewer x:Name="DesplazamientoReservas" VerticalScrollBarVisibility="Auto" Focusable="False">
+                        <ItemsControl x:Name="ListaReservas">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border x:Name="Fila" BorderBrush="{StaticResource Pincel.Borde}" BorderThickness="0,0,0,1"
+                                            Padding="14,11" Background="Transparent">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="{StaticResource Col.Localizador}"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="{StaticResource Col.Alojamiento}"/>
+                                                <ColumnDefinition Width="{StaticResource Col.Fechas}"/>
+                                                <ColumnDefinition Width="{StaticResource Col.Personas}"/>
+                                                <ColumnDefinition Width="{StaticResource Col.Estado}"/>
+                                                <ColumnDefinition Width="{StaticResource Col.Acciones}"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <TextBlock Grid.Column="0" Text="{Binding Localizador}" Style="{StaticResource Texto.Base}"
+                                                       FontWeight="SemiBold" Foreground="{StaticResource Pincel.Bosque800}"
+                                                       VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Column="1" Text="{Binding Titular}" Style="{StaticResource Texto.Base}"
+                                                       VerticalAlignment="Center" TextTrimming="CharacterEllipsis"
+                                                       TextWrapping="NoWrap" Margin="0,0,8,0"/>
+                                            <TextBlock Grid.Column="2" Text="{Binding NombreAlojamiento}" Style="{StaticResource Texto.Base}"
+                                                       VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                            <TextBlock Grid.Column="3" Text="{Binding EntradaSalidaTexto}" Style="{StaticResource Texto.Base}"
+                                                       VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Column="4" Text="{Binding Ocupantes}" Style="{StaticResource Texto.Base}"
+                                                       VerticalAlignment="Center" Margin="10,0,0,0"/>
+                                            <Border Grid.Column="5" Style="{StaticResource Chip.Reserva}" VerticalAlignment="Center">
+                                                <TextBlock Style="{StaticResource Chip.ReservaTexto}"/>
+                                            </Border>
+                                            <StackPanel Grid.Column="6" Orientation="Horizontal" VerticalAlignment="Center">
+                                                <Button Style="{StaticResource Boton.Fila}" Content="Ver" Margin="0,0,6,0"
+                                                        ToolTip="Ver los datos de la reserva y del alojamiento" Click="Ver_Click"/>
+                                                <Button Style="{StaticResource Boton.Fila}" Content="Editar" Margin="0,0,6,0"
+                                                        IsEnabled="False" ToolTipService.ShowOnDisabled="True"
+                                                        ToolTip="Sección en desarrollo"/>
+                                                <Button Style="{StaticResource Boton.Fila}" Content="Cancelar"
+                                                        IsEnabled="False" ToolTipService.ShowOnDisabled="True"
+                                                        ToolTip="Sección en desarrollo"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                    <DataTemplate.Triggers>
+                                        <Trigger SourceName="Fila" Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="Fila" Property="Background" Value="{StaticResource Pincel.BlancoCalido}"/>
+                                        </Trigger>
+                                    </DataTemplate.Triggers>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+
+                    <!-- Sin resultados -->
+                    <StackPanel x:Name="PanelSinResultados" VerticalAlignment="Center" HorizontalAlignment="Center"
+                                Visibility="Collapsed">
+                        <Border Width="56" Height="56" CornerRadius="28" Background="{StaticResource Pincel.Salvia100}">
+                            <TextBlock Style="{StaticResource Icono}" Text="&#xE787;" FontSize="22"
+                                       Foreground="{StaticResource Pincel.Bosque700}"/>
+                        </Border>
+                        <TextBlock x:Name="TxtSinResultados" Style="{StaticResource Texto.Etiqueta}" FontSize="15"
+                                   HorizontalAlignment="Center" Margin="0,14,0,4"/>
+                        <TextBlock x:Name="TxtSinResultadosAyuda" Style="{StaticResource Texto.Nota}" HorizontalAlignment="Center"/>
+                        <Button x:Name="BtnQuitarFiltros" Style="{StaticResource Boton.Enlace}" Content="Quitar filtros"
+                                HorizontalAlignment="Center" Margin="0,10,0,0" Click="Limpiar_Click"/>
+                    </StackPanel>
+                </Grid>
+            </DockPanel>
+        </Border>
+    </DockPanel>
+</comp:VistaBase>

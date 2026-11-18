@@ -110,6 +110,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Vistas\Paginas\ReservasVista.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Vistas\Paginas\FichaReserva.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Temas\Colores.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -184,6 +192,12 @@
     <Compile Include="Datos\RepositorioReservas.cs" />
     <Compile Include="Vistas\Paginas\FormularioReservaVista.xaml.cs">
       <DependentUpon>FormularioReservaVista.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Vistas\Paginas\ReservasVista.xaml.cs">
+      <DependentUpon>ReservasVista.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Vistas\Paginas\FichaReserva.xaml.cs">
+      <DependentUpon>FichaReserva.xaml</DependentUpon>
     </Compile>
     <Compile Include="Componentes\RutaImagenConverter.cs" />
     <Compile Include="Componentes\VistaBase.cs" />

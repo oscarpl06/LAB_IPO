@@ -138,7 +138,7 @@ namespace LAB_IPO.Vistas
             switch (opcion)
             {
                 case "Alojamientos": Navegar(new AlojamientosVista()); break;
-                case "Reservas": Navegar(new FormularioReservaVista()); break;
+                case "Reservas": Navegar(new ReservasVista()); break;
                 case "Personal": Navegar(new PersonalVista()); break;
                 default: Navegar(new InicioVista()); break;
             }
@@ -150,8 +150,8 @@ namespace LAB_IPO.Vistas
             var opcion = (string)((RadioButton)sender).Content;
             if (opcion == "Alojamientos" && !(VistaActual is AlojamientosVista))
                 Navegar(new AlojamientosVista());
-            else if (opcion == "Reservas" && !(VistaActual is FormularioReservaVista))
-                Navegar(new FormularioReservaVista());
+            else if (opcion == "Reservas" && !(VistaActual is ReservasVista))
+                Navegar(new ReservasVista());
             else if (opcion == "Personal" && !(VistaActual is PersonalVista))
                 Navegar(new PersonalVista());
         }
