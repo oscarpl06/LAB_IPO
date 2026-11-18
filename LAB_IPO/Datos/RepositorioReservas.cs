@@ -79,7 +79,7 @@ namespace LAB_IPO.Datos
             {
                 var estado = EstadoEn(alojamiento, dia);
                 if (estado.Reserva != null)
-                    return $"{nombre} ya está reservado esas fechas (reserva {estado.Reserva.Localizador}, "
+                    return $"{nombre} ya tiene una reserva en esas fechas ({estado.Reserva.Localizador}, "
                          + $"del {estado.Reserva.Entrada:dd/MM/yyyy} al {estado.Reserva.Salida:dd/MM/yyyy}).";
                 if (estado.Estado != EstadoAlojamiento.Libre)
                     return $"{nombre} no está libre el {dia:dd/MM/yyyy}: "
