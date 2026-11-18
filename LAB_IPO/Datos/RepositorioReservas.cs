@@ -153,6 +153,38 @@ namespace LAB_IPO.Datos
             return new EstadoDia { Estado = EstadoAlojamiento.Libre };
         }
 
+        /// <summary>
+        /// Motivo por el que no se puede poner ese estado hoy (CU-15), o null si se puede.
+        /// Una reserva en curso manda: mientras dure, el alojamiento está ocupado.
+        /// </summary>
+        public static string MotivoNoCambioEstado(object alojamiento, EstadoAlojamiento nuevo)
+        {
+            if (!Existe(alojamiento))
+                return $"{Alojamientos.Nombre(alojamiento)} ya no existe en el camping.";
+            if (!Enum.IsDefined(typeof(EstadoAlojamiento), nuevo))
+                return "El estado elegido no es válido.";
+
+            var enCurso = EstadoEn(alojamiento, Hoy).Reserva;
+            if (enCurso != null && nuevo != EstadoAlojamiento.Ocupado)
+                return $"Hoy está ocupado por la reserva {enCurso.Localizador} a nombre de {enCurso.Titular} "
+                     + $"(del {enCurso.Entrada:dd/MM/yyyy} al {enCurso.Salida:dd/MM/yyyy}). "
+                     + "Para liberarlo hay que cancelar o modificar esa reserva.";
+            return null;
+        }
+
+        /// <summary>
+        /// CU-15 · Cambia el estado actual del alojamiento. Al dejar de estar en reparación o pendiente
+        /// de limpieza, se quitan también los periodos previstos de ese estado.
+        /// </summary>
+        public static void CambiarEstadoActual(object alojamiento, EstadoAlojamiento nuevo)
+        {
+            string motivo = MotivoNoCambioEstado(alojamiento, nuevo);
+            if (motivo != null) throw new InvalidOperationException(motivo);
+
+            Incidencias.RemoveAll(i => i.Alojamiento == alojamiento && i.Estado != nuevo);
+            Alojamientos.CambiarEstado(alojamiento, nuevo);
+        }
+
         /// <summary>Reservas no canceladas de un alojamiento que todavía no han terminado (en curso o futuras).</summary>
         public static List<Reserva> ReservasVigentes(object alojamiento) =>
             Reservas.Where(r => !r.Cancelada && r.Alojamiento == alojamiento && r.Salida.Date > Hoy)

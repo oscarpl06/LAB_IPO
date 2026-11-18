@@ -479,6 +479,64 @@ namespace LAB_IPO.Vistas.Paginas
         private static SolidColorBrush Pincel(string hex) =>
             new SolidColorBrush((Color)ColorConverter.ConvertFromString(hex));
 
+        // ===== Cambiar el estado (CU-15) =====
+
+        // Alojamiento del último cambio de estado, para mantener su aviso visible tras redibujar.
+        private object _ultimoConAviso;
+
+        private void AplicarEstado_Click(object sender, RoutedEventArgs e)
+        {
+            var alojamiento = _seleccionAlojamiento;
+            if (alojamiento == null || _seleccionFecha != DateTime.Today) return;
+
+            var actual = RepositorioReservas.EstadoEn(alojamiento, DateTime.Today).Estado;
+            var nuevo = (EstadoAlojamiento)Math.Max(0, CmbSelEstado.SelectedIndex);
+            string nombre = Alojamientos.Nombre(alojamiento);
+
+            if (nuevo == actual)
+            {
+                DialogoMensaje.Mostrar(VentanaPropietaria, "Sin cambios",
+                    $"{nombre} ya está «{Alojamientos.EstadoTexto(actual)}». Elige otro estado en el desplegable.");
+                return;
+            }
+
+            string motivo = RepositorioReservas.MotivoNoCambioEstado(alojamiento, nuevo);
+            if (motivo != null)
+            {
+                DialogoMensaje.Mostrar(VentanaPropietaria, "No se puede cambiar el estado",
+                    motivo + "\n\nSe conserva el estado anterior.", TipoDialogo.Aviso);
+                CmbSelEstado.SelectedIndex = (int)actual;
+                return;
+            }
+
+            string detalle = $"Pasará de «{Alojamientos.EstadoTexto(actual)}» a «{Alojamientos.EstadoTexto(nuevo)}».";
+            if (actual == EstadoAlojamiento.Ocupado)
+                detalle += "\n\nAhora está ocupado: comprueba que los clientes ya lo han dejado antes de cambiarlo.";
+            if (!DialogoMensaje.Confirmar(VentanaPropietaria, $"¿Cambiar el estado de {nombre}?", detalle,
+                    "Cambiar estado", "Cancelar"))
+            {
+                CmbSelEstado.SelectedIndex = (int)actual;
+                return;
+            }
+
+            try
+            {
+                RepositorioReservas.CambiarEstadoActual(alojamiento, nuevo);
+            }
+            catch (InvalidOperationException ex)
+            {
+                DialogoMensaje.Mostrar(VentanaPropietaria, "No se puede cambiar el estado",
+                    ex.Message + " Se conserva el estado anterior.", TipoDialogo.Error);
+                return;
+            }
+
+            _ultimoConAviso = alojamiento;
+            TxtAvisoEstado.Text = $"Estado actualizado: {nombre} está «{Alojamientos.EstadoTexto(nuevo)}».";
+            AvisoEstado.Visibility = Visibility.Visible;
+            Dibujar();
+            Seleccionar(alojamiento, DateTime.Today);
+        }
+
         // ===== Nueva reserva (CU-16) =====
 
         private void NuevaReserva_Click(object sender, RoutedEventArgs e)
@@ -543,6 +601,17 @@ namespace LAB_IPO.Vistas.Paginas
             ChipSelEstado.DataContext = estado;
             TxtSelEstado.Text = Alojamientos.EstadoTexto(estado.Estado);
             CmbSelEstado.SelectedIndex = (int)estado.Estado;
+
+            // CU-15: el estado que se cambia es el actual, así que solo se edita en la casilla de hoy.
+            bool hoy = dia.Value == DateTime.Today;
+            CmbSelEstado.IsEnabled = BtnAplicarEstado.IsEnabled = hoy;
+            CmbSelEstado.ToolTip = hoy
+                ? "Nuevo estado del alojamiento"
+                : "El estado solo se cambia en la casilla de hoy; los demás días salen de las reservas";
+            BtnAplicarEstado.ToolTip = hoy
+                ? "Cambiar el estado actual del alojamiento (se pedirá confirmación)"
+                : "Selecciona la casilla de hoy para cambiar el estado actual";
+            if (!ReferenceEquals(alojamiento, _ultimoConAviso)) AvisoEstado.Visibility = Visibility.Collapsed;
 
             // CU-16: solo se puede reservar un día libre a partir de hoy.
             bool reservable = estado.Estado == EstadoAlojamiento.Libre && dia.Value >= DateTime.Today;
