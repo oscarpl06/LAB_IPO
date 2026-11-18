@@ -1,0 +1,187 @@
+<comp:VistaBase x:Class="LAB_IPO.Vistas.Paginas.ActividadesVista"
+                xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                xmlns:comp="clr-namespace:LAB_IPO.Componentes">
+
+    <comp:VistaBase.Resources>
+        <GridLength x:Key="Col.Horario">130</GridLength>
+        <GridLength x:Key="Col.Cupo">70</GridLength>
+        <GridLength x:Key="Col.Area">120</GridLength>
+        <GridLength x:Key="Col.Publico">116</GridLength>
+        <GridLength x:Key="Col.Monitores">150</GridLength>
+        <GridLength x:Key="Col.Acciones">170</GridLength>
+
+        <!-- Chip de destinatarios -->
+        <Style x:Key="Chip.Publico" TargetType="Border">
+            <Setter Property="CornerRadius" Value="11"/>
+            <Setter Property="Padding" Value="10,3"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Background" Value="{StaticResource Pincel.Salvia100}"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Publico}" Value="Niños">
+                    <Setter Property="Background" Value="#F6EFC9"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Publico}" Value="Familiar">
+                    <Setter Property="Background" Value="#E3ECF2"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </comp:VistaBase.Resources>
+
+    <!-- PG13a · Actividades y talleres (listado básico, CU-24) -->
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Top">
+            <TextBlock Text="Actividades y talleres" Style="{StaticResource Texto.TituloSeccion}"/>
+            <TextBlock Text="Organiza horarios, plazas, monitores y zonas del camping."
+                       Style="{StaticResource Texto.Secundario}" Margin="0,6,0,0"/>
+            <Border Style="{StaticResource Separador}" Margin="0,14,0,0"/>
+
+            <!-- Recuento y alta -->
+            <Grid Margin="0,16,0,10">
+                <TextBlock x:Name="TxtRecuento" Style="{StaticResource Texto.Secundario}" VerticalAlignment="Center"/>
+                <Button x:Name="BtnNuevaActividad" Style="{StaticResource Boton.Primario}" MinWidth="200"
+                        HorizontalAlignment="Right" ToolTip="Crear una actividad o taller nuevo"
+                        Click="NuevaActividad_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Style="{StaticResource Icono}" Text="&#xE710;" FontSize="13" Margin="0,0,8,0"
+                                   Foreground="{StaticResource Pincel.Blanco}"/>
+                        <TextBlock Text="Nueva actividad"/>
+                    </StackPanel>
+                </Button>
+            </Grid>
+
+            <!-- Aviso de alta correcta -->
+            <Border x:Name="AvisoGuardado" Background="{StaticResource Pincel.Salvia100}" CornerRadius="10"
+                    BorderBrush="{StaticResource Pincel.Salvia200}" BorderThickness="1"
+                    Padding="14,10" Margin="0,0,0,10" Visibility="Collapsed">
+                <StackPanel Orientation="Horizontal">
+                    <Border Width="22" Height="22" CornerRadius="11" Background="{StaticResource Pincel.Bosque700}">
+                        <TextBlock Style="{StaticResource Icono}" Text="{StaticResource Icono.Correcto}" FontSize="11"
+                                   Foreground="{StaticResource Pincel.Blanco}"/>
+                    </Border>
+                    <TextBlock x:Name="TxtAvisoGuardado" Style="{StaticResource Texto.Base}" FontWeight="SemiBold"
+                               Foreground="{StaticResource Pincel.Bosque800}" Margin="10,0,0,0" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+        </StackPanel>
+
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Margin="0,12,0,0">
+            <TextBlock Style="{StaticResource Icono}" Text="{StaticResource Icono.Info}" FontSize="13"
+                       Foreground="{StaticResource Pincel.Info}" Margin="0,0,8,0" VerticalAlignment="Center"/>
+            <TextBlock Style="{StaticResource Texto.Nota}" VerticalAlignment="Center"
+                       Text="El cupo muestra el mínimo y el máximo de participantes. Antes de eliminar se pedirá confirmación."/>
+        </StackPanel>
+
+        <!-- Tabla de actividades -->
+        <Border Style="{StaticResource Tarjeta}" CornerRadius="14">
+            <DockPanel>
+                <Border DockPanel.Dock="Top" Background="{StaticResource Pincel.Beige100}" CornerRadius="14,14,0,0"
+                        BorderBrush="{StaticResource Pincel.Borde}" BorderThickness="0,0,0,1" Padding="14,0" Height="40">
+                    <Grid>
+                        <Grid.Resources>
+                            <Style TargetType="TextBlock" BasedOn="{StaticResource Texto.Nota}">
+                                <Setter Property="FontWeight" Value="SemiBold"/>
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                <Setter Property="Foreground" Value="{StaticResource Pincel.TextoSecundario}"/>
+                            </Style>
+                        </Grid.Resources>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="{StaticResource Col.Horario}"/>
+                            <ColumnDefinition Width="{StaticResource Col.Cupo}"/>
+                            <ColumnDefinition Width="{StaticResource Col.Area}"/>
+                            <ColumnDefinition Width="{StaticResource Col.Publico}"/>
+                            <ColumnDefinition Width="{StaticResource Col.Monitores}"/>
+                            <ColumnDefinition Width="{StaticResource Col.Acciones}"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Text="Actividad"/>
+                        <TextBlock Grid.Column="1" Text="Horario"/>
+                        <TextBlock Grid.Column="2" Text="Cupo"/>
+                        <TextBlock Grid.Column="3" Text="Área"/>
+                        <TextBlock Grid.Column="4" Text="Destinatarios"/>
+                        <TextBlock Grid.Column="5" Text="Monitor/es"/>
+                        <TextBlock Grid.Column="6" Text="Acciones"/>
+                    </Grid>
+                </Border>
+
+                <Grid>
+                    <ScrollViewer x:Name="DesplazamientoActividades" VerticalScrollBarVisibility="Auto" Focusable="False">
+                        <ItemsControl x:Name="ListaActividades">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border x:Name="Fila" BorderBrush="{StaticResource Pincel.Borde}" BorderThickness="0,0,0,1"
+                                            Padding="14,11" Background="Transparent">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="{StaticResource Col.Horario}"/>
+                                                <ColumnDefinition Width="{StaticResource Col.Cupo}"/>
+                                                <ColumnDefinition Width="{StaticResource Col.Area}"/>
+                                                <ColumnDefinition Width="{StaticResource Col.Publico}"/>
+                                                <ColumnDefinition Width="{StaticResource Col.Monitores}"/>
+                                                <ColumnDefinition Width="{StaticResource Col.Acciones}"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,10,0">
+                                                <TextBlock Text="{Binding Nombre}" Style="{StaticResource Texto.Base}"
+                                                           FontWeight="SemiBold" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+                                                <TextBlock Text="{Binding PrecioTexto}" Style="{StaticResource Texto.Nota}" FontSize="12"/>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding HorarioTexto}" Style="{StaticResource Texto.Base}"/>
+                                                <TextBlock Text="{Binding DiasTexto}" Style="{StaticResource Texto.Nota}" FontSize="12"
+                                                           TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
+                                            </StackPanel>
+                                            <TextBlock Grid.Column="2" Text="{Binding CupoTexto}" Style="{StaticResource Texto.Base}"
+                                                       VerticalAlignment="Center"/>
+                                            <TextBlock Grid.Column="3" Text="{Binding Area}" Style="{StaticResource Texto.Base}"
+                                                       VerticalAlignment="Center"/>
+                                            <Border Grid.Column="4" Style="{StaticResource Chip.Publico}">
+                                                <TextBlock Text="{Binding Publico}" FontSize="12" FontWeight="SemiBold"
+                                                           Foreground="{StaticResource Pincel.Bosque800}"/>
+                                            </Border>
+                                            <TextBlock x:Name="TxtMonitores" Grid.Column="5" Text="{Binding MonitoresTexto}"
+                                                       Style="{StaticResource Texto.Base}" VerticalAlignment="Center"
+                                                       TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" Margin="0,0,8,0"/>
+                                            <StackPanel Grid.Column="6" Orientation="Horizontal" VerticalAlignment="Center">
+                                                <Button Style="{StaticResource Boton.Fila}" Content="Editar" Margin="0,0,6,0"
+                                                        IsEnabled="False" ToolTipService.ShowOnDisabled="True"
+                                                        ToolTip="Sección en desarrollo"/>
+                                                <Button Style="{StaticResource Boton.Fila}" Content="Eliminar"
+                                                        IsEnabled="False" ToolTipService.ShowOnDisabled="True"
+                                                        ToolTip="Sección en desarrollo"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                    <DataTemplate.Triggers>
+                                        <Trigger SourceName="Fila" Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="Fila" Property="Background" Value="{StaticResource Pincel.BlancoCalido}"/>
+                                        </Trigger>
+                                        <DataTrigger Binding="{Binding TieneMonitores}" Value="False">
+                                            <Setter TargetName="TxtMonitores" Property="Foreground" Value="{StaticResource Pincel.TextoTenue}"/>
+                                            <Setter TargetName="TxtMonitores" Property="FontStyle" Value="Italic"/>
+                                        </DataTrigger>
+                                    </DataTemplate.Triggers>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+
+                    <!-- Sin actividades -->
+                    <StackPanel x:Name="PanelSinActividades" VerticalAlignment="Center" HorizontalAlignment="Center"
+                                Visibility="Collapsed">
+                        <Border Width="56" Height="56" CornerRadius="28" Background="{StaticResource Pincel.Salvia100}">
+                            <TextBlock Style="{StaticResource Icono}" Text="&#xE787;" FontSize="22"
+                                       Foreground="{StaticResource Pincel.Bosque700}"/>
+                        </Border>
+                        <TextBlock Style="{StaticResource Texto.Etiqueta}" FontSize="15" HorizontalAlignment="Center"
+                                   Margin="0,14,0,4" Text="Todavía no hay actividades programadas"/>
+                        <TextBlock Style="{StaticResource Texto.Nota}" HorizontalAlignment="Center"
+                                   Text="Pulsa «Nueva actividad» para crear la primera."/>
+                    </StackPanel>
+                </Grid>
+            </DockPanel>
+        </Border>
+    </DockPanel>
+</comp:VistaBase>

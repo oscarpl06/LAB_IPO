@@ -121,7 +121,7 @@ namespace LAB_IPO.Vistas
 
         private void MarcarMenu(string opcion)
         {
-            var boton = new[] { MenuInicio, MenuReservas, MenuAlojamientos, MenuPersonal }
+            var boton = new[] { MenuInicio, MenuReservas, MenuPersonal, MenuActividades, MenuAlojamientos }
                 .FirstOrDefault(b => (string)b.Content == opcion);
             if (boton == null || boton.IsChecked == true) return;
 
@@ -139,6 +139,7 @@ namespace LAB_IPO.Vistas
             {
                 case "Alojamientos": Navegar(new AlojamientosVista()); break;
                 case "Reservas": Navegar(new ReservasVista()); break;
+                case "Actividades": Navegar(new ActividadesVista()); break;
                 case "Personal": Navegar(new PersonalVista()); break;
                 default: Navegar(new InicioVista()); break;
             }
@@ -152,6 +153,8 @@ namespace LAB_IPO.Vistas
                 Navegar(new AlojamientosVista());
             else if (opcion == "Reservas" && !(VistaActual is ReservasVista))
                 Navegar(new ReservasVista());
+            else if (opcion == "Actividades" && !(VistaActual is ActividadesVista))
+                Navegar(new ActividadesVista());
             else if (opcion == "Personal" && !(VistaActual is PersonalVista))
                 Navegar(new PersonalVista());
         }
