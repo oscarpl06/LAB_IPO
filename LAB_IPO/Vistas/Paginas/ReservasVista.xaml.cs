@@ -216,6 +216,53 @@ namespace LAB_IPO.Vistas.Paginas
             Navegador?.AbrirPanelLateral(new FichaReserva(reserva));
         }
 
+        // ===== Modificar (CU-18) y cancelar (CU-19) =====
+
+        private void Editar_Click(object sender, RoutedEventArgs e)
+        {
+            if (!((sender as FrameworkElement)?.DataContext is Reserva reserva)) return;
+            if (!RepositorioReservas.Reservas.Contains(reserva))
+            {
+                DialogoMensaje.Mostrar(VentanaPropietaria, "Reserva no disponible",
+                    "La reserva seleccionada ya no existe. Actualiza el listado y vuelve a intentarlo.", TipoDialogo.Aviso);
+                return;
+            }
+            Navegar(new FormularioReservaVista(reserva));
+        }
+
+        private void CancelarReserva_Click(object sender, RoutedEventArgs e)
+        {
+            if (!((sender as FrameworkElement)?.DataContext is Reserva r)) return;
+            if (!RepositorioReservas.Reservas.Contains(r) || !r.PuedeCancelarse)
+            {
+                DialogoMensaje.Mostrar(VentanaPropietaria, "No se puede cancelar la reserva",
+                    RepositorioReservas.Reservas.Contains(r) ? r.AyudaCancelar + "." : "La reserva ya no existe.",
+                    TipoDialogo.Aviso);
+                return;
+            }
+
+            bool confirmar = DialogoMensaje.Confirmar(VentanaPropietaria,
+                $"¿Cancelar la reserva {r.Localizador}?",
+                $"{r.NombreAlojamiento}, del {r.Entrada:dd/MM/yyyy} al {r.Salida:dd/MM/yyyy} ({r.NochesTexto}), "
+                + $"{r.Ocupantes} {(r.Ocupantes == 1 ? "ocupante" : "ocupantes")}, a nombre de {r.Titular}.\n\n"
+                + "El alojamiento volverá a quedar libre en esas fechas.",
+                "Cancelar reserva", "Volver");
+            if (!confirmar) return;
+
+            try
+            {
+                RepositorioReservas.Cancelar(r);
+            }
+            catch (InvalidOperationException ex)
+            {
+                DialogoMensaje.Mostrar(VentanaPropietaria, "No se puede cancelar la reserva", ex.Message, TipoDialogo.Error);
+                return;
+            }
+
+            Navegador?.CerrarPanelLateral();
+            Navegar(new ReservasVista($"Reserva {r.Localizador} cancelada. {r.NombreAlojamiento} vuelve a estar libre en esas fechas.", r));
+        }
+
         // ===== Alta (CU-16) =====
 
         private void NuevaReserva_Click(object sender, RoutedEventArgs e)

@@ -175,11 +175,13 @@
                                                 <Button Style="{StaticResource Boton.Fila}" Content="Ver" Margin="0,0,6,0"
                                                         ToolTip="Ver los datos de la reserva y del alojamiento" Click="Ver_Click"/>
                                                 <Button Style="{StaticResource Boton.Fila}" Content="Editar" Margin="0,0,6,0"
-                                                        IsEnabled="False" ToolTipService.ShowOnDisabled="True"
-                                                        ToolTip="Sección en desarrollo"/>
+                                                        IsEnabled="{Binding PuedeEditarse, Mode=OneWay}"
+                                                        ToolTipService.ShowOnDisabled="True"
+                                                        ToolTip="{Binding AyudaEditar}" Click="Editar_Click"/>
                                                 <Button Style="{StaticResource Boton.Fila}" Content="Cancelar"
-                                                        IsEnabled="False" ToolTipService.ShowOnDisabled="True"
-                                                        ToolTip="Sección en desarrollo"/>
+                                                        IsEnabled="{Binding PuedeCancelarse, Mode=OneWay}"
+                                                        ToolTipService.ShowOnDisabled="True"
+                                                        ToolTip="{Binding AyudaCancelar}" Click="CancelarReserva_Click"/>
                                             </StackPanel>
                                         </Grid>
                                     </Border>

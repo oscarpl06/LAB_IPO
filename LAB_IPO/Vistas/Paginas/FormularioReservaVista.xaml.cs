@@ -27,6 +27,11 @@ namespace LAB_IPO.Vistas.Paginas
             { "Antes de 10:00", "Antes de 11:00", "Antes de 12:00" };
 
         private readonly bool _desdeDisponibilidad;
+
+        /// <summary>Reserva que se está modificando (CU-18), o null en un alta (CU-16).</summary>
+        private readonly Reserva _original;
+        private bool EsEdicion => _original != null;
+        private bool EnEstancia => EsEdicion && _original.Estado == EstadoReserva.EnEstancia;
         private bool _salidaConfirmada;
         private bool _cargando;
 
@@ -76,6 +81,55 @@ namespace LAB_IPO.Vistas.Paginas
             int noches = Math.Max(1, (alojamiento as Bungalow)?.EstanciaMinima ?? 1);
             FechaEntrada.Fecha = entrada.Date;
             FechaSalida.Fecha = entrada.Date.AddDays(noches);
+
+            MarcarPendiente();
+            _cargando = false;
+        }
+
+        /// <summary>
+        /// CU-18 · El mismo formulario con los datos actuales de la reserva. Si el cliente ya está
+        /// alojado, la entrada y el alojamiento quedan bloqueados.
+        /// </summary>
+        public FormularioReservaVista(Reserva reserva) : this()
+        {
+            _original = reserva ?? throw new ArgumentNullException(nameof(reserva));
+            _cargando = true;
+
+            TxtTitulo.Text = $"Editar reserva {reserva.Localizador}";
+            TxtSubtitulo.Text = EnEstancia
+                ? "El cliente ya está alojado: puedes cambiar la salida, los ocupantes, el contacto y las solicitudes."
+                : "Modifica las fechas, el alojamiento, los ocupantes o los datos de contacto y vuelve a comprobar la disponibilidad.";
+            TxtGuardar.Text = "Guardar cambios";
+            BtnGuardar.ToolTip = "Comprobar la disponibilidad y guardar los cambios de la reserva";
+            BtnCancelarFormulario.ToolTip = "Volver al listado sin guardar los cambios";
+
+            CmbTipo.SelectedItem = reserva.Alojamiento is Bungalow ? "Bungalow" : "Parcela";
+            CargarAlojamientos();
+            CmbAlojamiento.SelectedItem = ((IEnumerable<OpcionAlojamiento>)CmbAlojamiento.ItemsSource)
+                .FirstOrDefault(o => o.Alojamiento == reserva.Alojamiento);
+            FechaEntrada.Fecha = reserva.Entrada.Date;
+            FechaSalida.Fecha = reserva.Salida.Date;
+            TxtAdultos.Text = reserva.Adultos.ToString();
+            TxtNinos.Text = reserva.Ninos > 0 ? reserva.Ninos.ToString() : "";
+            if (reserva.HoraLlegada != null) CmbHoraLlegada.SelectedItem = reserva.HoraLlegada;
+            if (reserva.HoraSalida != null) CmbHoraSalida.SelectedItem = reserva.HoraSalida;
+            TxtTitular.Text = reserva.Titular;
+            TxtTelefonos.Text = reserva.Telefonos;
+            TxtCorreo.Text = reserva.Correo ?? "";
+            TxtDocumento.Text = reserva.Documento ?? "";
+            TxtSolicitudes.Text = reserva.Solicitudes ?? "";
+            ActualizarOcupantes();
+
+            if (EnEstancia)
+            {
+                const string bloqueado = "El cliente ya está alojado: no se puede cambiar";
+                FechaEntrada.IsEnabled = CmbTipo.IsEnabled = CmbAlojamiento.IsEnabled = false;
+                FechaEntrada.ToolTip = bloqueado + " la entrada";
+                CmbTipo.ToolTip = CmbAlojamiento.ToolTip = bloqueado + " el alojamiento";
+                ToolTipService.SetShowOnDisabled(FechaEntrada, true);
+                ToolTipService.SetShowOnDisabled(CmbTipo, true);
+                ToolTipService.SetShowOnDisabled(CmbAlojamiento, true);
+            }
 
             MarcarPendiente();
             _cargando = false;
@@ -161,7 +215,8 @@ namespace LAB_IPO.Vistas.Paginas
         {
             var entrada = FechaEntrada.Fecha.Value;
             var salida = FechaSalida.Fecha.Value;
-            string motivo = RepositorioReservas.MotivoNoDisponible(AlojamientoElegido, entrada, salida, Adultos + Ninos);
+            string motivo = RepositorioReservas.MotivoNoDisponible(AlojamientoElegido, entrada, salida, Adultos + Ninos,
+                                                                  excluir: _original);
 
             if (motivo == null)
             {
@@ -189,7 +244,8 @@ namespace LAB_IPO.Vistas.Paginas
             int ocupantes = Adultos + Ninos;
             var alternativas = ((IEnumerable<OpcionAlojamiento>)CmbAlojamiento.ItemsSource)
                 .Where(o => o.Alojamiento != AlojamientoElegido
-                            && RepositorioReservas.MotivoNoDisponible(o.Alojamiento, entrada, salida, ocupantes) == null)
+                            && RepositorioReservas.MotivoNoDisponible(o.Alojamiento, entrada, salida, ocupantes,
+                                                                      excluir: _original) == null)
                 .ToList();
 
             bool bungalow = AlojamientoElegido is Bungalow;
@@ -250,7 +306,7 @@ namespace LAB_IPO.Vistas.Paginas
                 Marcar(FechaEntrada, errores, "Indica la fecha de entrada.");
             else if (FechaEntrada.TextoNoValido)
                 Marcar(FechaEntrada, errores, "La fecha de entrada no es válida (dd/mm/aaaa).");
-            else if (FechaEntrada.Fecha < DateTime.Today)
+            else if (FechaEntrada.Fecha < DateTime.Today && !(EsEdicion && FechaEntrada.Fecha == _original.Entrada.Date))
                 Marcar(FechaEntrada, errores, "La fecha de entrada no puede ser anterior a hoy.");
 
             if (FechaSalida.EstaVacio)
@@ -259,6 +315,8 @@ namespace LAB_IPO.Vistas.Paginas
                 Marcar(FechaSalida, errores, "La fecha de salida no es válida (dd/mm/aaaa).");
             else if (FechaEntrada.Fecha.HasValue && FechaSalida.Fecha <= FechaEntrada.Fecha)
                 Marcar(FechaSalida, errores, "La fecha de salida debe ser posterior a la de entrada.");
+            else if (EnEstancia && FechaSalida.Fecha <= DateTime.Today)
+                Marcar(FechaSalida, errores, "La salida debe ser posterior a hoy: el cliente sigue alojado.");
 
             if (CmbTipo.SelectedItem == null)
                 Marcar(CmbTipo, errores, "Selecciona el tipo de alojamiento.");
@@ -361,8 +419,15 @@ namespace LAB_IPO.Vistas.Paginas
 
             if (!ComprobarDisponibilidad())
             {
-                TxtError.Text = "No se puede crear la reserva: " + TxtDisponibilidad.Text.Replace("No disponible: ", "");
+                TxtError.Text = (EsEdicion ? "No se pueden guardar los cambios: " : "No se puede crear la reserva: ")
+                                + TxtDisponibilidad.Text.Replace("No disponible: ", "");
                 PanelError.Visibility = Visibility.Visible;
+                return;
+            }
+
+            if (EsEdicion)
+            {
+                GuardarCambios();
                 return;
             }
 
@@ -404,6 +469,73 @@ namespace LAB_IPO.Vistas.Paginas
                 + $"del {entrada:dd/MM/yyyy} al {salida:dd/MM/yyyy}.", reserva));
         }
 
+        /// <summary>Datos del formulario como reserva (sin localizador ni estado).</summary>
+        private Reserva LeerFormulario() => new Reserva
+        {
+            Titular = Normalizar(TxtTitular.Text),
+            Alojamiento = AlojamientoElegido,
+            Entrada = FechaEntrada.Fecha.Value,
+            Salida = FechaSalida.Fecha.Value,
+            HoraLlegada = (string)CmbHoraLlegada.SelectedItem,
+            HoraSalida = (string)CmbHoraSalida.SelectedItem,
+            Telefonos = string.Join(", ", Partes(TxtTelefonos.Text)),
+            Correo = TxtCorreo.Text.Trim(),
+            Documento = TxtDocumento.Text.Trim(),
+            Adultos = Adultos,
+            Ninos = Ninos,
+            Solicitudes = TxtSolicitudes.Text.Trim()
+        };
+
+        private bool HayCambiosEnEdicion
+        {
+            get
+            {
+                if (!FechaEntrada.Fecha.HasValue || !FechaSalida.Fecha.HasValue) return true;
+                var c = LeerFormulario();
+                var o = _original;
+                return c.Alojamiento != o.Alojamiento || c.Entrada != o.Entrada.Date || c.Salida != o.Salida.Date
+                       || c.HoraLlegada != o.HoraLlegada || c.HoraSalida != o.HoraSalida
+                       || c.Titular != o.Titular || c.Telefonos != string.Join(", ", Partes(o.Telefonos))
+                       || c.Correo != (o.Correo ?? "") || c.Documento != (o.Documento ?? "")
+                       || c.Adultos != o.Adultos || c.Ninos != o.Ninos || c.Solicitudes != (o.Solicitudes ?? "");
+            }
+        }
+
+        /// <summary>CU-18 · Pide confirmación y aplica los cambios sobre la reserva existente (RF-36).</summary>
+        private void GuardarCambios()
+        {
+            if (!HayCambiosEnEdicion)
+            {
+                DialogoMensaje.Mostrar(VentanaPropietaria, "No hay cambios que guardar",
+                    $"No has modificado ningún dato de la reserva {_original.Localizador}.");
+                return;
+            }
+
+            var cambios = LeerFormulario();
+            int noches = (int)(cambios.Salida - cambios.Entrada).TotalDays;
+            if (!DialogoMensaje.Confirmar(VentanaPropietaria,
+                    $"¿Guardar los cambios de la reserva {_original.Localizador}?",
+                    $"{Alojamientos.Nombre(cambios.Alojamiento)}, del {cambios.Entrada:dd/MM/yyyy} al "
+                    + $"{cambios.Salida:dd/MM/yyyy} ({noches} {(noches == 1 ? "noche" : "noches")}), para "
+                    + $"{cambios.Ocupantes} {(cambios.Ocupantes == 1 ? "ocupante" : "ocupantes")}, a nombre de {cambios.Titular}.",
+                    "Guardar cambios", "Seguir editando"))
+                return;
+
+            try
+            {
+                RepositorioReservas.Modificar(_original, cambios);
+            }
+            catch (InvalidOperationException ex)
+            {
+                DialogoMensaje.Mostrar(VentanaPropietaria, "No se han podido guardar los cambios",
+                    ex.Message + " La reserva se conserva como estaba.", TipoDialogo.Error);
+                return;
+            }
+
+            _salidaConfirmada = true;
+            Navegar(new ReservasVista($"Cambios de la reserva {_original.Localizador} guardados correctamente.", _original));
+        }
+
         // ===== Cancelar y salida =====
 
         private void Cancelar_Click(object sender, RoutedEventArgs e)
@@ -422,12 +554,17 @@ namespace LAB_IPO.Vistas.Paginas
         /// <summary>Si hay datos sin guardar, pide confirmación antes de abandonar el formulario (RF-36).</summary>
         public override bool PuedeSalir()
         {
-            if (_salidaConfirmada || !HayDatos) return true;
+            if (_salidaConfirmada || !(EsEdicion ? HayCambiosEnEdicion : HayDatos)) return true;
 
-            _salidaConfirmada = DialogoMensaje.Confirmar(VentanaPropietaria,
-                "¿Descartar la nueva reserva?",
-                "Se perderán los datos que has introducido en el formulario.",
-                "Descartar", "Seguir editando");
+            _salidaConfirmada = EsEdicion
+                ? DialogoMensaje.Confirmar(VentanaPropietaria,
+                    $"¿Descartar los cambios de la reserva {_original.Localizador}?",
+                    "La reserva se quedará como estaba.",
+                    "Descartar", "Seguir editando")
+                : DialogoMensaje.Confirmar(VentanaPropietaria,
+                    "¿Descartar la nueva reserva?",
+                    "Se perderán los datos que has introducido en el formulario.",
+                    "Descartar", "Seguir editando");
             return _salidaConfirmada;
         }
     }
