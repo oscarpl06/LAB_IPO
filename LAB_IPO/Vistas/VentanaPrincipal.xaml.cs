@@ -121,7 +121,7 @@ namespace LAB_IPO.Vistas
 
         private void MarcarMenu(string opcion)
         {
-            var boton = new[] { MenuInicio, MenuAlojamientos }
+            var boton = new[] { MenuInicio, MenuAlojamientos, MenuPersonal }
                 .FirstOrDefault(b => (string)b.Content == opcion);
             if (boton == null || boton.IsChecked == true) return;
 
@@ -138,6 +138,7 @@ namespace LAB_IPO.Vistas
             switch (opcion)
             {
                 case "Alojamientos": Navegar(new AlojamientosVista()); break;
+                case "Personal": Navegar(new PersonalVista()); break;
                 default: Navegar(new InicioVista()); break;
             }
         }
@@ -148,6 +149,8 @@ namespace LAB_IPO.Vistas
             var opcion = (string)((RadioButton)sender).Content;
             if (opcion == "Alojamientos" && !(VistaActual is AlojamientosVista))
                 Navegar(new AlojamientosVista());
+            else if (opcion == "Personal" && !(VistaActual is PersonalVista))
+                Navegar(new PersonalVista());
         }
 
         // ===== Sesión y cierre =====

@@ -82,6 +82,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Vistas\Paginas\PersonalVista.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Vistas\Paginas\FormularioEmpleadoVista.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Vistas\Paginas\FormularioParcelaVista.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -167,6 +175,16 @@
       <DependentUpon>FichaBungalow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Vistas\Paginas\PersonalVista.xaml.cs">
+      <DependentUpon>PersonalVista.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Vistas\Paginas\FormularioEmpleadoVista.xaml.cs">
+      <DependentUpon>FormularioEmpleadoVista.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Modelos\Empleado.cs" />
+    <Compile Include="Datos\RepositorioPersonal.cs" />
     <Compile Include="Modelos\Parcela.cs" />
     <Compile Include="Modelos\TipoParcela.cs" />
     <Compile Include="Componentes\CampoAyudante.cs" />
@@ -210,6 +228,13 @@
     <Resource Include="Recursos\Imagenes\logo-texto.png" />
     <Resource Include="Recursos\Imagenes\logo-insignia.png" />
     <Resource Include="Recursos\app.ico" />
+    <Resource Include="Recursos\Fotos\Empleados\jorge-sanchez.jpg" />
+    <Resource Include="Recursos\Fotos\Empleados\fernando-izquierdo.jpg" />
+    <Resource Include="Recursos\Fotos\Empleados\diego-perez.jpg" />
+    <Resource Include="Recursos\Fotos\Empleados\javier-martin.jpg" />
+    <Resource Include="Recursos\Fotos\Empleados\lucia-fernandez.jpg" />
+    <Resource Include="Recursos\Fotos\Empleados\ana-lopez.jpg" />
+    <Resource Include="Recursos\Fotos\Empleados\elena-diaz.jpg" />
     <Resource Include="Recursos\Fotos\Bungalows\bungalow-01.jpg" />
     <Resource Include="Recursos\Fotos\Bungalows\bungalow-02.jpg" />
     <Resource Include="Recursos\Fotos\Bungalows\bungalow-04.jpg" />
