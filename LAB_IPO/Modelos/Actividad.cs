@@ -79,5 +79,41 @@ namespace LAB_IPO.Modelos
             : string.Join(", ", Monitores.Select(m => $"{m.Nombre?.FirstOrDefault()}. {m.Apellidos}"));
 
         public bool TieneMonitores => Monitores.Count > 0;
+
+        // ===== Textos para la ficha (CU-27) =====
+
+        public string DiasCompletosTexto
+        {
+            get
+            {
+                var dias = Semana.Where(Dias.Contains)
+                    .Select(d => Es.DateTimeFormat.GetDayName(d)).ToList();
+                if (dias.Count == 7) return "Todos los días";
+                if (dias.Count == 1) return Mayuscula(dias[0]);
+                return Mayuscula(string.Join(", ", dias.Take(dias.Count - 1)) + " y " + dias.Last());
+            }
+        }
+
+        public string DuracionTexto
+        {
+            get
+            {
+                var duracion = HoraFin - HoraInicio;
+                if (duracion.TotalMinutes < 60) return $"{duracion.TotalMinutes:0} min";
+                return duracion.Minutes == 0 ? $"{duracion.Hours} h" : $"{duracion.Hours} h {duracion.Minutes} min";
+            }
+        }
+
+        public string CupoMinimoTexto => CupoMinimo.HasValue
+            ? (CupoMinimo == 1 ? "1 participante" : $"{CupoMinimo} participantes")
+            : "Sin mínimo";
+        public string CupoMaximoTexto => CupoMaximo == 1 ? "1 participante" : $"{CupoMaximo} participantes";
+
+        public string DescripcionTexto => string.IsNullOrWhiteSpace(Descripcion) ? "Sin descripción." : Descripcion;
+        public string MaterialesTexto => string.IsNullOrWhiteSpace(Materiales) ? "No se necesita material." : Materiales;
+        public string NotasTexto => string.IsNullOrWhiteSpace(Notas) ? "—" : Notas;
+
+        private static string Mayuscula(string texto) =>
+            string.IsNullOrEmpty(texto) ? texto : char.ToUpper(texto[0]) + texto.Substring(1);
     }
 }

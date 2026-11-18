@@ -126,6 +126,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Vistas\Paginas\FichaActividad.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Temas\Colores.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -215,6 +219,9 @@
     </Compile>
     <Compile Include="Modelos\Actividad.cs" />
     <Compile Include="Datos\RepositorioActividades.cs" />
+    <Compile Include="Vistas\Paginas\FichaActividad.xaml.cs">
+      <DependentUpon>FichaActividad.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Componentes\RutaImagenConverter.cs" />
     <Compile Include="Componentes\VistaBase.cs" />
     <Compile Include="Datos\RepositorioAlojamientos.cs" />

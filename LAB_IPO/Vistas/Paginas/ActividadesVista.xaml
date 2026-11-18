@@ -9,7 +9,7 @@
         <GridLength x:Key="Col.Area">120</GridLength>
         <GridLength x:Key="Col.Publico">116</GridLength>
         <GridLength x:Key="Col.Monitores">150</GridLength>
-        <GridLength x:Key="Col.Acciones">170</GridLength>
+        <GridLength x:Key="Col.Acciones">226</GridLength>
 
         <!-- Chip de destinatarios -->
         <Style x:Key="Chip.Publico" TargetType="Border">
@@ -35,10 +35,45 @@
             <TextBlock Text="Actividades y talleres" Style="{StaticResource Texto.TituloSeccion}"/>
             <TextBlock Text="Organiza horarios, plazas, monitores y zonas del camping."
                        Style="{StaticResource Texto.Secundario}" Margin="0,6,0,0"/>
-            <Border Style="{StaticResource Separador}" Margin="0,14,0,0"/>
+            <Border Style="{StaticResource Separador}" Margin="0,14,0,12"/>
+
+            <!-- Filtros (CU-27) -->
+            <GroupBox Style="{StaticResource Grupo}" Header="Filtros" Padding="20,10,20,14">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="170"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="140"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Buscar" Style="{StaticResource Texto.Etiqueta}" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                    <TextBox x:Name="TxtBuscar" Grid.Column="1" Style="{StaticResource Campo.Texto}" Height="34"
+                             comp:CampoAyudante.TextoEjemplo="Nombre de actividad"
+                             ToolTip="Escribe parte del nombre de la actividad y pulsa Intro"
+                             KeyDown="Buscar_KeyDown"/>
+                    <TextBlock Grid.Column="2" Text="Área" Style="{StaticResource Texto.Etiqueta}"
+                               VerticalAlignment="Center" Margin="16,0,10,0"/>
+                    <ComboBox x:Name="CmbFiltroArea" Grid.Column="3" Style="{StaticResource Campo.Desplegable}"
+                              Height="34" ToolTip="Mostrar solo las actividades de esa zona del camping"/>
+                    <TextBlock Grid.Column="4" Text="Público" Style="{StaticResource Texto.Etiqueta}"
+                               VerticalAlignment="Center" Margin="16,0,10,0"/>
+                    <ComboBox x:Name="CmbFiltroPublico" Grid.Column="5" Style="{StaticResource Campo.Desplegable}"
+                              Height="34" ToolTip="Mostrar solo las actividades para ese público"/>
+                    <Button x:Name="BtnFiltrar" Grid.Column="6" Style="{StaticResource Boton.SecundarioPequeno}"
+                            Content="Filtrar" Height="34" Margin="16,0,8,0"
+                            ToolTip="Aplicar la búsqueda y los filtros al listado" Click="Filtrar_Click"/>
+                    <Button x:Name="BtnLimpiar" Grid.Column="7" Style="{StaticResource Boton.SecundarioPequeno}"
+                            Content="Limpiar" Height="34"
+                            ToolTip="Quitar los filtros y mostrar todas las actividades" Click="Limpiar_Click"/>
+                </Grid>
+            </GroupBox>
 
             <!-- Recuento y alta -->
-            <Grid Margin="0,16,0,10">
+            <Grid Margin="0,14,0,10">
                 <TextBlock x:Name="TxtRecuento" Style="{StaticResource Texto.Secundario}" VerticalAlignment="Center"/>
                 <Button x:Name="BtnNuevaActividad" Style="{StaticResource Boton.Primario}" MinWidth="200"
                         HorizontalAlignment="Right" ToolTip="Crear una actividad o taller nuevo"
@@ -145,6 +180,8 @@
                                                        Style="{StaticResource Texto.Base}" VerticalAlignment="Center"
                                                        TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" Margin="0,0,8,0"/>
                                             <StackPanel Grid.Column="6" Orientation="Horizontal" VerticalAlignment="Center">
+                                                <Button Style="{StaticResource Boton.Fila}" Content="Ver" Margin="0,0,6,0"
+                                                        ToolTip="Ver todos los datos de la actividad" Click="Ver_Click"/>
                                                 <Button Style="{StaticResource Boton.Fila}" Content="Editar" Margin="0,0,6,0"
                                                         IsEnabled="False" ToolTipService.ShowOnDisabled="True"
                                                         ToolTip="Sección en desarrollo"/>
@@ -168,17 +205,18 @@
                         </ItemsControl>
                     </ScrollViewer>
 
-                    <!-- Sin actividades -->
+                    <!-- Sin actividades o sin resultados -->
                     <StackPanel x:Name="PanelSinActividades" VerticalAlignment="Center" HorizontalAlignment="Center"
                                 Visibility="Collapsed">
                         <Border Width="56" Height="56" CornerRadius="28" Background="{StaticResource Pincel.Salvia100}">
-                            <TextBlock Style="{StaticResource Icono}" Text="&#xE787;" FontSize="22"
+                            <TextBlock Style="{StaticResource Icono}" Text="&#xE721;" FontSize="22"
                                        Foreground="{StaticResource Pincel.Bosque700}"/>
                         </Border>
-                        <TextBlock Style="{StaticResource Texto.Etiqueta}" FontSize="15" HorizontalAlignment="Center"
-                                   Margin="0,14,0,4" Text="Todavía no hay actividades programadas"/>
-                        <TextBlock Style="{StaticResource Texto.Nota}" HorizontalAlignment="Center"
-                                   Text="Pulsa «Nueva actividad» para crear la primera."/>
+                        <TextBlock x:Name="TxtSinActividades" Style="{StaticResource Texto.Etiqueta}" FontSize="15"
+                                   HorizontalAlignment="Center" Margin="0,14,0,4"/>
+                        <TextBlock x:Name="TxtSinActividadesAyuda" Style="{StaticResource Texto.Nota}" HorizontalAlignment="Center"/>
+                        <Button x:Name="BtnQuitarFiltros" Style="{StaticResource Boton.Enlace}" Content="Quitar filtros"
+                                HorizontalAlignment="Center" Margin="0,10,0,0" Click="Limpiar_Click"/>
                     </StackPanel>
                 </Grid>
             </DockPanel>
