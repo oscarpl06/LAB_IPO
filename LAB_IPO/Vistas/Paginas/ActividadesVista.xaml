@@ -177,6 +177,7 @@
                                                            Foreground="{StaticResource Pincel.Bosque800}"/>
                                             </Border>
                                             <TextBlock x:Name="TxtMonitores" Grid.Column="5" Text="{Binding MonitoresTexto}"
+                                                       ToolTip="{Binding MonitoresTexto}"
                                                        Style="{StaticResource Texto.Base}" VerticalAlignment="Center"
                                                        TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" Margin="0,0,8,0"/>
                                             <StackPanel Grid.Column="6" Orientation="Horizontal" VerticalAlignment="Center">
