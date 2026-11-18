@@ -134,6 +134,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Vistas\Paginas\AyudaVista.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Vistas\Paginas\AcercaDeVista.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Temas\Colores.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -229,6 +237,14 @@
     <Compile Include="Vistas\Paginas\GaleriaBungalowVista.xaml.cs">
       <DependentUpon>GaleriaBungalowVista.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Vistas\Paginas\AyudaVista.xaml.cs">
+      <DependentUpon>AyudaVista.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Vistas\Paginas\AcercaDeVista.xaml.cs">
+      <DependentUpon>AcercaDeVista.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Componentes\VistaSecundaria.cs" />
+    <Compile Include="Datos\TemasAyuda.cs" />
     <Compile Include="Componentes\RutaImagenConverter.cs" />
     <Compile Include="Componentes\VistaBase.cs" />
     <Compile Include="Datos\RepositorioAlojamientos.cs" />
