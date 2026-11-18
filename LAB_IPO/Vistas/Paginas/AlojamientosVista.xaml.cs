@@ -40,7 +40,7 @@ namespace LAB_IPO.Vistas.Paginas
 
         /// <param name="mensajeGuardado">Si se indica, muestra un aviso de confirmación sobre la tabla.</param>
         /// <param name="mostrarBungalows">Abre directamente la pestaña de bungalows.</param>
-        public AlojamientosVista(string mensajeGuardado, bool mostrarBungalows = false)
+        public AlojamientosVista(string mensajeGuardado, bool mostrarBungalows = false, Parcela destacar = null)
         {
             InitializeComponent();
             _vistaBungalows = new ListCollectionView(RepositorioAlojamientos.Bungalows);
@@ -99,7 +99,7 @@ namespace LAB_IPO.Vistas.Paginas
                         PanelBungalows.ScrollToEnd();
                         return;
                     }
-                    var ultima = RepositorioAlojamientos.Parcelas.LastOrDefault();
+                    var ultima = destacar ?? RepositorioAlojamientos.Parcelas.LastOrDefault();
                     if (ultima != null) ListaParcelas.ScrollIntoView(ultima);
                 };
             }
@@ -319,6 +319,23 @@ namespace LAB_IPO.Vistas.Paginas
             }
 
             Navegador?.AbrirPanelLateral(new FichaBungalow(bungalow));
+        }
+
+        // ===== Modificar parcela (CU-05) =====
+
+        private void EditarParcela_Click(object sender, RoutedEventArgs e)
+        {
+            if (!((sender as FrameworkElement)?.DataContext is Parcela parcela)) return;
+
+            if (!RepositorioAlojamientos.Parcelas.Contains(parcela))
+            {
+                DialogoMensaje.Mostrar(VentanaPropietaria, "Parcela no disponible",
+                    "La parcela seleccionada ya no existe. Actualiza el listado y vuelve a intentarlo.",
+                    TipoDialogo.Aviso);
+                return;
+            }
+
+            Navegar(new FormularioParcelaVista(parcela));
         }
 
         // ===== Alta (CU-03) =====

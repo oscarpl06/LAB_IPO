@@ -17,6 +17,13 @@ namespace LAB_IPO.Vistas.Paginas
             DataContext = parcela;
         }
 
+        // Abre el formulario en modo edición; al navegar, la ventana cierra el panel lateral.
+        private void Editar_Click(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is Parcela parcela)
+                (Window.GetWindow(this) as INavegador)?.Navegar(new FormularioParcelaVista(parcela));
+        }
+
         private void Cerrar_Click(object sender, RoutedEventArgs e)
         {
             (Window.GetWindow(this) as INavegador)?.CerrarPanelLateral();
