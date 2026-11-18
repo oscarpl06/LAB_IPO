@@ -31,6 +31,14 @@ namespace LAB_IPO.Vistas.Paginas
         {
         }
 
+        /// <summary>Tras modificar un empleado (CU-23): aviso y su fila a la vista.</summary>
+        public PersonalVista(string mensajeGuardado, Empleado destacar) : this(mensajeGuardado)
+        {
+            _destacar = destacar;
+        }
+
+        private Empleado _destacar;
+
         /// <param name="mensajeGuardado">Si se indica, muestra un aviso de confirmación sobre la tabla.</param>
         public PersonalVista(string mensajeGuardado)
         {
@@ -49,8 +57,15 @@ namespace LAB_IPO.Vistas.Paginas
             {
                 TxtAvisoGuardado.Text = mensajeGuardado;
                 AvisoGuardado.Visibility = Visibility.Visible;
-                // El empleado nuevo se añade al final: se baja hasta él para que se vea.
-                Loaded += (s, e) => DesplazamientoEmpleados.ScrollToEnd();
+                // Tras editar se baja hasta su fila; el empleado nuevo se añade al final.
+                Loaded += (s, e) =>
+                {
+                    if (_destacar != null
+                        && ListaEmpleados.ItemContainerGenerator.ContainerFromItem(_destacar) is FrameworkElement fila)
+                        fila.BringIntoView();
+                    else
+                        DesplazamientoEmpleados.ScrollToEnd();
+                };
             }
         }
 
@@ -152,6 +167,61 @@ namespace LAB_IPO.Vistas.Paginas
             }
 
             Navegador?.AbrirPanelLateral(new FichaEmpleado(empleado));
+        }
+
+        // ===== Modificar (CU-23) y dar de baja (CU-21) =====
+
+        private void Editar_Click(object sender, RoutedEventArgs e)
+        {
+            if (!((sender as FrameworkElement)?.DataContext is Empleado empleado)) return;
+            if (!RepositorioPersonal.Empleados.Contains(empleado))
+            {
+                DialogoMensaje.Mostrar(VentanaPropietaria, "Empleado no disponible",
+                    "El empleado seleccionado ya no existe. Actualiza el listado y vuelve a intentarlo.", TipoDialogo.Aviso);
+                return;
+            }
+            Navegar(new FormularioEmpleadoVista(empleado));
+        }
+
+        private void DarDeBaja_Click(object sender, RoutedEventArgs e)
+        {
+            if (!((sender as FrameworkElement)?.DataContext is Empleado emp)) return;
+            if (!RepositorioPersonal.Empleados.Contains(emp) || !emp.Activo)
+            {
+                DialogoMensaje.Mostrar(VentanaPropietaria, "No se puede dar de baja",
+                    RepositorioPersonal.Empleados.Contains(emp)
+                        ? $"{emp.NombreCompleto} ya está de baja."
+                        : "El empleado ya no existe. Actualiza el listado y vuelve a intentarlo.",
+                    TipoDialogo.Aviso);
+                return;
+            }
+
+            var actividades = RepositorioPersonal.ActividadesDe(emp);
+            string detalle = $"{emp.Telefonos} · {emp.Correos}\nDisponibilidad: {emp.Disponibilidad}";
+            detalle += actividades.Count == 0
+                ? "\n\nNo es monitor de ninguna actividad."
+                : "\n\nDejará de ser monitor de: " + string.Join(", ", actividades.Select(a => a.Nombre)) + ".";
+            detalle += "\n\nSus datos se conservan y se pueden consultar con el filtro «De baja».";
+
+            if (!DialogoMensaje.Confirmar(VentanaPropietaria, $"¿Dar de baja a {emp.NombreCompleto}?", detalle,
+                    "Dar de baja", "Cancelar"))
+                return;
+
+            try
+            {
+                RepositorioPersonal.DarDeBaja(emp);
+            }
+            catch (InvalidOperationException ex)
+            {
+                DialogoMensaje.Mostrar(VentanaPropietaria, "No se ha podido dar de baja", ex.Message, TipoDialogo.Error);
+                return;
+            }
+
+            Navegador?.CerrarPanelLateral();
+            AplicarFiltros();
+            TxtAvisoGuardado.Text = $"{emp.NombreCompleto} dado de baja correctamente."
+                + (actividades.Count > 0 ? $" Ya no es monitor de {actividades.Count} " + (actividades.Count == 1 ? "actividad." : "actividades.") : "");
+            AvisoGuardado.Visibility = Visibility.Visible;
         }
 
         // ===== Alta (CU-20) =====

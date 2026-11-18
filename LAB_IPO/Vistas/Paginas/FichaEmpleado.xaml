@@ -22,6 +22,19 @@
 
     <!-- CU-22 · Ficha de consulta de un empleado (RF-24), en el panel lateral de la ventana principal -->
     <DockPanel>
+        <!-- Pie: acceso directo a la edición (CU-23) -->
+        <Border DockPanel.Dock="Bottom" BorderBrush="{StaticResource Pincel.Borde}" BorderThickness="0,1,0,0"
+                Padding="26,14">
+            <Button x:Name="BtnEditarEmpleado" Style="{StaticResource Boton.Primario}" HorizontalAlignment="Stretch"
+                    ToolTip="Modificar los datos de este empleado" Click="Editar_Click">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource Icono}" Text="&#xE70F;" FontSize="14" Margin="0,0,8,0"
+                               Foreground="{StaticResource Pincel.Blanco}"/>
+                    <TextBlock Text="Editar empleado"/>
+                </StackPanel>
+            </Button>
+        </Border>
+
         <Grid DockPanel.Dock="Top" Margin="26,22,16,0">
             <TextBlock Text="FICHA DEL EMPLEADO" Style="{StaticResource Texto.Rotulo}"/>
             <Button x:Name="BtnCerrarFicha" Style="{StaticResource Boton.Ventana}" Width="36" Height="36"
