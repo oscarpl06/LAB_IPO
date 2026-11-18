@@ -148,7 +148,9 @@ namespace LAB_IPO.Vistas.Paginas
                 return;
             }
 
-            Navegador?.AbrirPanelLateral(new FichaActividad(actividad));
+            var ficha = new FichaActividad(actividad);
+            ficha.MonitoresCambiados += (s, a) => _vista.Refresh();   // CU-28: columna Monitor/es
+            Navegador?.AbrirPanelLateral(ficha);
         }
 
         // ===== Alta (CU-24) =====
