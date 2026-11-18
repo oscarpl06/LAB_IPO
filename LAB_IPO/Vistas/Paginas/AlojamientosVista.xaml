@@ -257,22 +257,29 @@
 
                                     <Border Style="{StaticResource Separador}" Margin="0,12,0,10"/>
 
+                                    <!-- Precio y estancia mínima -->
                                     <Grid>
-                                        <StackPanel>
-                                            <TextBlock>
-                                                <Run Text="{Binding PrecioTexto, Mode=OneWay}" FontFamily="{StaticResource Fuente.Titulos}"
-                                                     FontSize="20" FontWeight="SemiBold" Foreground="{StaticResource Pincel.Bosque800}"/>
-                                                <Run Text=" / noche" FontSize="12" Foreground="{StaticResource Pincel.TextoSecundario}"/>
-                                            </TextBlock>
-                                            <TextBlock Text="{Binding EstanciaTexto}" Style="{StaticResource Texto.Nota}" FontSize="11"/>
-                                        </StackPanel>
-                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                                            <Button Style="{StaticResource Boton.Fila}" Content="Ver" Margin="0,0,6,0"
-                                                    ToolTip="Ver la ficha completa del bungalow" Click="VerBungalow_Click"/>
-                                            <Button Style="{StaticResource Boton.Fila}" Content="Editar"
-                                                    ToolTip="Modificar los datos del bungalow" Click="EditarBungalow_Click"/>
-                                        </StackPanel>
+                                        <TextBlock VerticalAlignment="Center">
+                                            <Run Text="{Binding PrecioTexto, Mode=OneWay}" FontFamily="{StaticResource Fuente.Titulos}"
+                                                 FontSize="20" FontWeight="SemiBold" Foreground="{StaticResource Pincel.Bosque800}"/>
+                                            <Run Text=" / noche" FontSize="12" Foreground="{StaticResource Pincel.TextoSecundario}"/>
+                                        </TextBlock>
+                                        <TextBlock Text="{Binding EstanciaTexto}" Style="{StaticResource Texto.Nota}" FontSize="11"
+                                                   HorizontalAlignment="Right" VerticalAlignment="Center"/>
                                     </Grid>
+
+                                    <!-- Acciones, repartidas a lo ancho de la tarjeta -->
+                                    <UniformGrid Columns="3" Margin="0,12,0,0">
+                                        <Button Style="{StaticResource Boton.Fila}" Content="Ver" Margin="0,0,4,0"
+                                                HorizontalAlignment="Stretch"
+                                                ToolTip="Ver la ficha completa del bungalow" Click="VerBungalow_Click"/>
+                                        <Button Style="{StaticResource Boton.Fila}" Content="Editar" Margin="4,0"
+                                                HorizontalAlignment="Stretch"
+                                                ToolTip="Modificar los datos del bungalow" Click="EditarBungalow_Click"/>
+                                        <Button Style="{StaticResource Boton.Fila}" Content="Eliminar" Margin="4,0,0,0"
+                                                HorizontalAlignment="Stretch"
+                                                ToolTip="Dar de baja este bungalow" Click="EliminarBungalow_Click"/>
+                                    </UniformGrid>
                                 </StackPanel>
                             </StackPanel>
                         </Border>
@@ -393,7 +400,7 @@
                                             <Button Style="{StaticResource Boton.Fila}" Content="Editar" Margin="0,0,6,0"
                                                     ToolTip="Modificar los datos de la parcela" Click="EditarParcela_Click"/>
                                             <Button Style="{StaticResource Boton.Fila}" Content="Eliminar"
-                                                    IsEnabled="False" ToolTip="Sección en desarrollo"/>
+                                                    ToolTip="Dar de baja esta parcela" Click="EliminarParcela_Click"/>
                                         </StackPanel>
                                     </Grid>
                                 </DataTemplate>

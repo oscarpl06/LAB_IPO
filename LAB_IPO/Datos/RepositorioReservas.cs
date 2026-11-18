@@ -153,6 +153,33 @@ namespace LAB_IPO.Datos
             return new EstadoDia { Estado = EstadoAlojamiento.Libre };
         }
 
+        /// <summary>Reservas no canceladas de un alojamiento que todavía no han terminado (en curso o futuras).</summary>
+        public static List<Reserva> ReservasVigentes(object alojamiento) =>
+            Reservas.Where(r => !r.Cancelada && r.Alojamiento == alojamiento && r.Salida.Date > Hoy)
+                    .OrderBy(r => r.Entrada)
+                    .ToList();
+
+        /// <summary>
+        /// Motivo por el que no se puede dar de baja un alojamiento (CU-04, CU-08), o null si se puede:
+        /// no puede estar ocupado ni tener reservas en curso o futuras.
+        /// </summary>
+        public static string MotivoNoBaja(object alojamiento)
+        {
+            string nombre = Alojamientos.Nombre(alojamiento);
+            var vigentes = ReservasVigentes(alojamiento);
+            if (vigentes.Count > 0)
+            {
+                string lista = string.Join(", ", vigentes.Select(r =>
+                    $"{r.Localizador} del {r.Entrada:dd/MM/yyyy} al {r.Salida:dd/MM/yyyy}"));
+                return vigentes.Count == 1
+                    ? $"{nombre} tiene 1 reserva que todavía no ha terminado: {lista}."
+                    : $"{nombre} tiene {vigentes.Count} reservas que todavía no han terminado: {lista}.";
+            }
+            if (Alojamientos.Estado(alojamiento) == EstadoAlojamiento.Ocupado)
+                return $"{nombre} está ocupado en este momento.";
+            return null;
+        }
+
         /// <summary>Reservas de un alojamiento que coinciden con alguna noche del intervalo.</summary>
         public static List<Reserva> ReservasEntre(object alojamiento, DateTime desde, DateTime hasta) =>
             Reservas.Where(r => !r.Cancelada && r.Alojamiento == alojamiento && r.CoincideCon(desde, hasta))
