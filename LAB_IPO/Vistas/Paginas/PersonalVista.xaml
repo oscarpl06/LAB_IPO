@@ -20,8 +20,7 @@
             <Border Style="{StaticResource Separador}" Margin="0,14,0,12"/>
 
             <!-- Búsqueda y filtros (CU-22) -->
-            <GroupBox Style="{StaticResource Grupo}" Header="Búsqueda y filtros" Padding="20,10,20,14"
-                      IsEnabled="False" ToolTip="Los filtros estarán disponibles con la consulta de empleados">
+            <GroupBox Style="{StaticResource Grupo}" Header="Búsqueda y filtros" Padding="20,10,20,14">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
@@ -33,18 +32,21 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <TextBlock Text="Buscar" Style="{StaticResource Texto.Etiqueta}" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                    <TextBox Grid.Column="1" Style="{StaticResource Campo.Texto}" Height="34"
-                             comp:CampoAyudante.TextoEjemplo="Nombre, email o teléfono"/>
+                    <TextBox x:Name="TxtBuscar" Grid.Column="1" Style="{StaticResource Campo.Texto}" Height="34"
+                             comp:CampoAyudante.TextoEjemplo="Nombre, email o teléfono"
+                             ToolTip="Escribe parte del nombre, del correo o del teléfono y pulsa Intro"
+                             KeyDown="Buscar_KeyDown"/>
                     <TextBlock Grid.Column="2" Text="Idioma" Style="{StaticResource Texto.Etiqueta}"
                                VerticalAlignment="Center" Margin="18,0,10,0"/>
-                    <ComboBox Grid.Column="3" Style="{StaticResource Campo.Desplegable}" Height="34"
-                              comp:CampoAyudante.TextoEjemplo="Todos"/>
+                    <ComboBox x:Name="CmbFiltroIdioma" Grid.Column="3" Style="{StaticResource Campo.Desplegable}"
+                              Height="34" ToolTip="Mostrar solo los empleados que hablan ese idioma"/>
                     <TextBlock Grid.Column="4" Text="Estado" Style="{StaticResource Texto.Etiqueta}"
                                VerticalAlignment="Center" Margin="18,0,10,0"/>
-                    <ComboBox Grid.Column="5" Style="{StaticResource Campo.Desplegable}" Height="34"
-                              comp:CampoAyudante.TextoEjemplo="Activo"/>
-                    <Button Grid.Column="6" Style="{StaticResource Boton.SecundarioPequeno}" Content="Filtrar"
-                            Height="34" Margin="18,0,0,0"/>
+                    <ComboBox x:Name="CmbFiltroEstado" Grid.Column="5" Style="{StaticResource Campo.Desplegable}"
+                              Height="34" ToolTip="Empleados en activo, dados de baja o todos"/>
+                    <Button x:Name="BtnFiltrar" Grid.Column="6" Style="{StaticResource Boton.SecundarioPequeno}"
+                            Content="Filtrar" Height="34" Margin="18,0,0,0"
+                            ToolTip="Aplicar la búsqueda y los filtros al listado" Click="Filtrar_Click"/>
                 </Grid>
             </GroupBox>
 
@@ -110,6 +112,7 @@
                     </Grid>
                 </Border>
 
+                <Grid>
                 <ScrollViewer x:Name="DesplazamientoEmpleados" VerticalScrollBarVisibility="Auto" Focusable="False">
                     <ItemsControl x:Name="ListaEmpleados">
                         <ItemsControl.ItemTemplate>
@@ -145,7 +148,7 @@
                                         </Border>
                                         <StackPanel Grid.Column="5" Orientation="Horizontal" VerticalAlignment="Center">
                                             <Button Style="{StaticResource Boton.Fila}" Content="Ver" Margin="0,0,6,0"
-                                                    IsEnabled="False" ToolTip="Sección en desarrollo"/>
+                                                    ToolTip="Ver la ficha completa del empleado" Click="Ver_Click"/>
                                             <Button Style="{StaticResource Boton.Fila}" Content="Editar" Margin="0,0,6,0"
                                                     IsEnabled="False" ToolTip="Sección en desarrollo"/>
                                             <Button Style="{StaticResource Boton.Fila}" Content="Dar de baja"
@@ -162,6 +165,22 @@
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
                 </ScrollViewer>
+
+                <!-- Sin resultados -->
+                <StackPanel x:Name="PanelSinResultados" VerticalAlignment="Center" HorizontalAlignment="Center"
+                            Visibility="Collapsed">
+                    <Border Width="56" Height="56" CornerRadius="28" Background="{StaticResource Pincel.Salvia100}">
+                        <TextBlock Style="{StaticResource Icono}" Text="&#xE721;" FontSize="22"
+                                   Foreground="{StaticResource Pincel.Bosque700}"/>
+                    </Border>
+                    <TextBlock Style="{StaticResource Texto.Etiqueta}" FontSize="15" HorizontalAlignment="Center"
+                               Margin="0,14,0,4" Text="No hay empleados que coincidan con la búsqueda"/>
+                    <TextBlock Style="{StaticResource Texto.Nota}" HorizontalAlignment="Center"
+                               Text="Prueba con otro nombre, idioma o estado."/>
+                    <Button Style="{StaticResource Boton.Enlace}" Content="Quitar filtros" HorizontalAlignment="Center"
+                            Margin="0,10,0,0" Click="Limpiar_Click"/>
+                </StackPanel>
+                </Grid>
             </DockPanel>
         </Border>
     </DockPanel>

@@ -1,3 +1,5 @@
+using System.Linq;
+
 namespace LAB_IPO.Modelos
 {
     /// <summary>
@@ -33,5 +35,20 @@ namespace LAB_IPO.Modelos
         public string NombreCompleto => $"{Nombre} {Apellidos}";
 
         public string IdiomasTexto => string.IsNullOrWhiteSpace(Idiomas) ? "—" : Idiomas;
+
+        // Textos para la ficha (CU-22): lista separada por líneas y valores por defecto.
+        public string TelefonosLista => Lista(Telefonos);
+        public string CorreosLista => Lista(Correos);
+        public string FormacionTexto => Vacio(Formacion, "Sin formación registrada");
+        public string DiasNoDisponiblesTexto => Vacio(DiasNoDisponibles, "Ninguno");
+        public string RestriccionesTexto => Vacio(Restricciones, "Sin restricciones registradas");
+        public string EstadoTexto => Activo ? "Activo" : "De baja";
+
+        private static string Lista(string texto) =>
+            string.Join("\n", (texto ?? "").Split(',')
+                .Select(t => t.Trim()).Where(t => t.Length > 0));
+
+        private static string Vacio(string texto, string porDefecto) =>
+            string.IsNullOrWhiteSpace(texto) ? porDefecto : texto.Trim();
     }
 }
