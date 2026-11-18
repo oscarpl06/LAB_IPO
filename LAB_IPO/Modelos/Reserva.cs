@@ -142,6 +142,16 @@ namespace LAB_IPO.Modelos
             }
         }
 
+        public static void CambiarEstado(object alojamiento, EstadoAlojamiento estado)
+        {
+            switch (alojamiento)
+            {
+                case Parcela p: p.Estado = estado; break;
+                case Bungalow b: b.Estado = estado; break;
+                default: throw new InvalidOperationException("El alojamiento no es una parcela ni un bungalow.");
+            }
+        }
+
         public static string EstadoTexto(EstadoAlojamiento estado)
         {
             switch (estado)

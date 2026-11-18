@@ -202,10 +202,22 @@
 
                         <TextBlock Text="Estado" Style="{StaticResource Texto.Etiqueta}" Margin="0,0,0,6"/>
                         <ComboBox x:Name="CmbSelEstado" Style="{StaticResource Campo.Desplegable}" Height="36"
-                                  IsEnabled="False" ToolTipService.ShowOnDisabled="True" ToolTip="Sección en desarrollo"/>
+                                  ToolTipService.ShowOnDisabled="True"/>
                         <Button x:Name="BtnAplicarEstado" Style="{StaticResource Boton.Secundario}" Content="Aplicar estado"
                                 HorizontalAlignment="Stretch" Margin="0,10,0,0"
-                                IsEnabled="False" ToolTipService.ShowOnDisabled="True" ToolTip="Sección en desarrollo"/>
+                                ToolTipService.ShowOnDisabled="True" Click="AplicarEstado_Click"/>
+
+                        <!-- Resultado del cambio de estado (CU-15) -->
+                        <Border x:Name="AvisoEstado" CornerRadius="10" Padding="10,8" Margin="0,10,0,0"
+                                Background="{StaticResource Pincel.Salvia100}" Visibility="Collapsed">
+                            <DockPanel>
+                                <TextBlock DockPanel.Dock="Left" Style="{StaticResource Icono}"
+                                           Text="{StaticResource Icono.Correcto}" FontSize="12"
+                                           Foreground="{StaticResource Pincel.Bosque700}" VerticalAlignment="Top" Margin="0,2,8,0"/>
+                                <TextBlock x:Name="TxtAvisoEstado" Style="{StaticResource Texto.Base}" FontSize="13"
+                                           Foreground="{StaticResource Pincel.Bosque800}" TextWrapping="Wrap"/>
+                            </DockPanel>
+                        </Border>
 
                         <Button x:Name="BtnNuevaReserva" Style="{StaticResource Boton.Primario}" HorizontalAlignment="Stretch"
                                 Margin="0,18,0,0" ToolTipService.ShowOnDisabled="True" Click="NuevaReserva_Click">
