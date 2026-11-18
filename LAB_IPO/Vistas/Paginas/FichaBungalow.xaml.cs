@@ -39,6 +39,13 @@ namespace LAB_IPO.Vistas.Paginas
                 FotoGrande.ImageSource = RutaImagenConverter.Cargar(ruta, 900);
         }
 
+        // Abre el formulario en modo edición; al navegar, la ventana cierra el panel lateral.
+        private void Editar_Click(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is Bungalow bungalow)
+                (Window.GetWindow(this) as INavegador)?.Navegar(new FormularioBungalowVista(bungalow));
+        }
+
         private void Cerrar_Click(object sender, RoutedEventArgs e)
         {
             (Window.GetWindow(this) as INavegador)?.CerrarPanelLateral();
