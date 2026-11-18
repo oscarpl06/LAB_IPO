@@ -53,6 +53,19 @@
 
     <!-- CU-10 · Ficha de consulta de un bungalow (RF-09), en el panel lateral de la ventana principal -->
     <DockPanel>
+        <!-- Pie: acceso directo a la edición (CU-09) -->
+        <Border DockPanel.Dock="Bottom" BorderBrush="{StaticResource Pincel.Borde}" BorderThickness="0,1,0,0"
+                Padding="26,14">
+            <Button x:Name="BtnEditarBungalow" Style="{StaticResource Boton.Primario}" HorizontalAlignment="Stretch"
+                    ToolTip="Modificar los datos de este bungalow" Click="Editar_Click">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Style="{StaticResource Icono}" Text="&#xE70F;" FontSize="14" Margin="0,0,8,0"
+                               Foreground="{StaticResource Pincel.Blanco}"/>
+                    <TextBlock Text="Editar bungalow"/>
+                </StackPanel>
+            </Button>
+        </Border>
+
         <!-- Cabecera -->
         <Grid DockPanel.Dock="Top" Margin="26,22,16,0">
             <StackPanel>

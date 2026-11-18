@@ -28,8 +28,13 @@ namespace LAB_IPO.Vistas.Paginas
         private readonly ObservableCollection<string> _fotos = new ObservableCollection<string>();
         private bool _salidaConfirmada;
 
+        /// <summary>Bungalow que se está modificando (CU-09), o null en un alta (CU-07).</summary>
+        private readonly Bungalow _original;
+        private bool EsEdicion => _original != null;
+
         public override string OpcionMenu => "Alojamientos";
 
+        /// <summary>CU-07 · Formulario vacío para dar de alta un bungalow.</summary>
         public FormularioBungalowVista()
         {
             InitializeComponent();
@@ -37,8 +42,47 @@ namespace LAB_IPO.Vistas.Paginas
             _fotos.CollectionChanged += (s, e) => ActualizarGaleria();
 
             TxtNombre.Text = RepositorioAlojamientos.SiguienteNombreBungalow();
-            Loaded += (s, e) => { TxtNombre.Focus(); TxtNombre.SelectAll(); };
+            Loaded += (s, e) =>
+            {
+                if (EsEdicion) { TxtTamano.Focus(); return; }
+                TxtNombre.Focus();
+                TxtNombre.SelectAll();
+            };
         }
+
+        /// <summary>
+        /// CU-09 · Mismo formulario con los datos actuales del bungalow (RF-08).
+        /// El nombre se muestra pero no se puede cambiar.
+        /// </summary>
+        public FormularioBungalowVista(Bungalow bungalow) : this()
+        {
+            _original = bungalow ?? throw new System.ArgumentNullException(nameof(bungalow));
+
+            TxtTitulo.Text = $"Editar {bungalow.Nombre}";
+            TxtSubtitulo.Text = "Modifica las características, el equipamiento, la descripción o las fotos del bungalow";
+            TxtGuardar.Text = "Guardar cambios";
+            BtnGuardar.ToolTip = "Guardar los cambios del bungalow";
+            BtnCancelarFormulario.ToolTip = "Volver a los bungalows sin guardar los cambios";
+
+            TxtNombre.Text = bungalow.Nombre;
+            TxtNombre.IsEnabled = false;
+            TxtNombre.ToolTip = "El nombre de un bungalow no se puede cambiar";
+            ToolTipService.SetShowOnDisabled(TxtNombre, true);
+
+            TxtTamano.Text = bungalow.TamanoM2.ToString();
+            TxtCapacidad.Text = bungalow.CapacidadMaxima.ToString();
+            TxtPrecio.Text = TextoPrecio(bungalow.PrecioNoche);
+            TxtEstancia.Text = bungalow.EstanciaMinima?.ToString() ?? string.Empty;
+            ChkMenaje.IsChecked = bungalow.Menaje;
+            ChkMicroondas.IsChecked = bungalow.Microondas;
+            ChkRopa.IsChecked = bungalow.RopaCamaToallas;
+            ChkWifi.IsChecked = bungalow.WiFi;
+            TxtDescripcion.Text = bungalow.Descripcion ?? string.Empty;
+            foreach (var foto in bungalow.Fotos) _fotos.Add(foto);
+        }
+
+        private static string TextoPrecio(decimal precio) =>
+            precio.ToString(precio % 1 == 0 ? "0" : "0.00", Es);
 
         // ===== Guardar =====
 
@@ -47,7 +91,9 @@ namespace LAB_IPO.Vistas.Paginas
             var errores = new List<string>();
 
             string nombre = string.Join(" ", TxtNombre.Text.Split(new[] { ' ' }, System.StringSplitOptions.RemoveEmptyEntries));
-            if (nombre.Length == 0)
+            if (EsEdicion)
+                nombre = _original.Nombre;   // bloqueado: no se valida
+            else if (nombre.Length == 0)
                 Marcar(TxtNombre, errores, "Indica el nombre del bungalow.");
             else if (RepositorioAlojamientos.ExisteBungalow(nombre))
                 Marcar(TxtNombre, errores, $"Ya existe un bungalow llamado {nombre}.");
@@ -86,6 +132,12 @@ namespace LAB_IPO.Vistas.Paginas
                 return;
             }
 
+            if (EsEdicion)
+            {
+                GuardarCambios(tamano, capacidad, precio, estancia);
+                return;
+            }
+
             var bungalow = new Bungalow
             {
                 Nombre = nombre,
@@ -105,6 +157,38 @@ namespace LAB_IPO.Vistas.Paginas
 
             _salidaConfirmada = true;
             Navegar(new AlojamientosVista($"{nombre} registrado correctamente.", mostrarBungalows: true));
+        }
+
+        /// <summary>CU-09 · Pide confirmación y aplica los cambios sobre el bungalow existente (RF-36).</summary>
+        private void GuardarCambios(int tamano, int capacidad, decimal precio, int estancia)
+        {
+            if (!HayCambios)
+            {
+                DialogoMensaje.Mostrar(VentanaPropietaria, "No hay cambios que guardar",
+                    $"No has modificado ningún dato de {_original.Nombre}.");
+                return;
+            }
+
+            bool confirmar = DialogoMensaje.Confirmar(VentanaPropietaria,
+                $"¿Guardar los cambios de {_original.Nombre}?",
+                "Se actualizarán sus datos y su galería con los valores del formulario.",
+                "Guardar", "Seguir editando");
+            if (!confirmar) return;
+
+            _original.TamanoM2 = tamano;
+            _original.CapacidadMaxima = capacidad;
+            _original.PrecioNoche = precio;
+            _original.EstanciaMinima = estancia > 0 ? estancia : (int?)null;
+            _original.Menaje = ChkMenaje.IsChecked == true;
+            _original.Microondas = ChkMicroondas.IsChecked == true;
+            _original.RopaCamaToallas = ChkRopa.IsChecked == true;
+            _original.WiFi = ChkWifi.IsChecked == true;
+            _original.Descripcion = TxtDescripcion.Text.Trim();
+            _original.Fotos = _fotos.ToList();
+
+            _salidaConfirmada = true;
+            Navegar(new AlojamientosVista($"Cambios de {_original.Nombre} guardados correctamente.",
+                mostrarBungalows: true, destacarBungalow: _original));
         }
 
         /// <summary>Lee un entero positivo de un campo; devuelve 0 si está vacío o no es válido.</summary>
@@ -210,21 +294,41 @@ namespace LAB_IPO.Vistas.Paginas
             Navegar(new AlojamientosVista(null, mostrarBungalows: true));
         }
 
-        private bool HayCambios =>
+        private bool HayCambios => EsEdicion ? HayCambiosEnEdicion : HayDatosEnAlta;
+
+        private bool HayDatosEnAlta =>
             TxtNombre.Text.Trim() != RepositorioAlojamientos.SiguienteNombreBungalow()
             || new[] { TxtTamano, TxtCapacidad, TxtPrecio, TxtEstancia, TxtDescripcion }.Any(t => t.Text.Trim().Length > 0)
             || new[] { ChkMenaje, ChkMicroondas, ChkRopa, ChkWifi }.Any(c => c.IsChecked == true)
             || _fotos.Count > 0;
+
+        /// <summary>True si algún campo o la galería difieren de los datos actuales del bungalow.</summary>
+        private bool HayCambiosEnEdicion =>
+            TxtTamano.Text.Trim() != _original.TamanoM2.ToString()
+            || TxtCapacidad.Text.Trim() != _original.CapacidadMaxima.ToString()
+            || TxtPrecio.Text.Trim().Replace('.', ',') != TextoPrecio(_original.PrecioNoche)
+            || TxtEstancia.Text.Trim() != (_original.EstanciaMinima?.ToString() ?? string.Empty)
+            || (ChkMenaje.IsChecked == true) != _original.Menaje
+            || (ChkMicroondas.IsChecked == true) != _original.Microondas
+            || (ChkRopa.IsChecked == true) != _original.RopaCamaToallas
+            || (ChkWifi.IsChecked == true) != _original.WiFi
+            || TxtDescripcion.Text.Trim() != (_original.Descripcion ?? string.Empty).Trim()
+            || !_fotos.SequenceEqual(_original.Fotos);
 
         /// <summary>Si hay datos sin guardar, pide confirmación antes de abandonar el formulario (RF-36).</summary>
         public override bool PuedeSalir()
         {
             if (_salidaConfirmada || !HayCambios) return true;
 
-            _salidaConfirmada = DialogoMensaje.Confirmar(VentanaPropietaria,
-                "¿Descartar el nuevo bungalow?",
-                "Se perderán los datos y las fotos que has introducido en el formulario.",
-                "Descartar", "Seguir editando");
+            _salidaConfirmada = EsEdicion
+                ? DialogoMensaje.Confirmar(VentanaPropietaria,
+                    $"¿Descartar los cambios de {_original.Nombre}?",
+                    "Los datos y las fotos del bungalow se quedarán como estaban.",
+                    "Descartar", "Seguir editando")
+                : DialogoMensaje.Confirmar(VentanaPropietaria,
+                    "¿Descartar el nuevo bungalow?",
+                    "Se perderán los datos y las fotos que has introducido en el formulario.",
+                    "Descartar", "Seguir editando");
             return _salidaConfirmada;
         }
     }

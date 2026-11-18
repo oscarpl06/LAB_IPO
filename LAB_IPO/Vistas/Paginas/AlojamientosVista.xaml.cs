@@ -40,7 +40,8 @@ namespace LAB_IPO.Vistas.Paginas
 
         /// <param name="mensajeGuardado">Si se indica, muestra un aviso de confirmación sobre la tabla.</param>
         /// <param name="mostrarBungalows">Abre directamente la pestaña de bungalows.</param>
-        public AlojamientosVista(string mensajeGuardado, bool mostrarBungalows = false, Parcela destacar = null)
+        public AlojamientosVista(string mensajeGuardado, bool mostrarBungalows = false, Parcela destacar = null,
+                                 Bungalow destacarBungalow = null)
         {
             InitializeComponent();
             _vistaBungalows = new ListCollectionView(RepositorioAlojamientos.Bungalows);
@@ -96,7 +97,12 @@ namespace LAB_IPO.Vistas.Paginas
                 {
                     if (mostrarBungalows)
                     {
-                        PanelBungalows.ScrollToEnd();
+                        // Tras editar se baja hasta su tarjeta; tras un alta, hasta el final.
+                        if (destacarBungalow != null
+                            && ListaBungalows.ItemContainerGenerator.ContainerFromItem(destacarBungalow) is FrameworkElement tarjeta)
+                            tarjeta.BringIntoView();
+                        else
+                            PanelBungalows.ScrollToEnd();
                         return;
                     }
                     var ultima = destacar ?? RepositorioAlojamientos.Parcelas.LastOrDefault();
@@ -319,6 +325,23 @@ namespace LAB_IPO.Vistas.Paginas
             }
 
             Navegador?.AbrirPanelLateral(new FichaBungalow(bungalow));
+        }
+
+        // ===== Modificar bungalow (CU-09) =====
+
+        private void EditarBungalow_Click(object sender, RoutedEventArgs e)
+        {
+            if (!((sender as FrameworkElement)?.DataContext is Bungalow bungalow)) return;
+
+            if (!RepositorioAlojamientos.Bungalows.Contains(bungalow))
+            {
+                DialogoMensaje.Mostrar(VentanaPropietaria, "Bungalow no disponible",
+                    "El bungalow seleccionado ya no existe. Actualiza el listado y vuelve a intentarlo.",
+                    TipoDialogo.Aviso);
+                return;
+            }
+
+            Navegar(new FormularioBungalowVista(bungalow));
         }
 
         // ===== Modificar parcela (CU-05) =====
