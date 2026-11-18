@@ -56,14 +56,31 @@
         <!-- Pie: acceso directo a la edición (CU-09) -->
         <Border DockPanel.Dock="Bottom" BorderBrush="{StaticResource Pincel.Borde}" BorderThickness="0,1,0,0"
                 Padding="26,14">
-            <Button x:Name="BtnEditarBungalow" Style="{StaticResource Boton.Primario}" HorizontalAlignment="Stretch"
-                    ToolTip="Modificar los datos de este bungalow" Click="Editar_Click">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock Style="{StaticResource Icono}" Text="&#xE70F;" FontSize="14" Margin="0,0,8,0"
-                               Foreground="{StaticResource Pincel.Blanco}"/>
-                    <TextBlock Text="Editar bungalow"/>
-                </StackPanel>
-            </Button>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="12"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <!-- CU-11, CU-12 y CU-13: galería de fotos (PG6) -->
+                <Button x:Name="BtnGaleria" Style="{StaticResource Boton.Secundario}" HorizontalAlignment="Stretch"
+                        ToolTip="Ver, añadir o eliminar las fotos del bungalow" Click="Galeria_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Style="{StaticResource Icono}" Text="&#xE91B;" FontSize="14" Margin="0,0,8,0"
+                                   Foreground="{StaticResource Pincel.Bosque800}"/>
+                        <TextBlock Text="Galería"/>
+                    </StackPanel>
+                </Button>
+                <Button x:Name="BtnEditarBungalow" Grid.Column="2" Style="{StaticResource Boton.Primario}"
+                        HorizontalAlignment="Stretch"
+                        ToolTip="Modificar los datos de este bungalow" Click="Editar_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Style="{StaticResource Icono}" Text="&#xE70F;" FontSize="14" Margin="0,0,8,0"
+                                   Foreground="{StaticResource Pincel.Blanco}"/>
+                        <TextBlock Text="Editar"/>
+                    </StackPanel>
+                </Button>
+            </Grid>
         </Border>
 
         <!-- Cabecera -->
@@ -90,7 +107,8 @@
                                        HorizontalAlignment="Center" Margin="0,6,0,0"/>
                         </StackPanel>
                     </Border>
-                    <Border CornerRadius="14">
+                    <Border CornerRadius="14" Cursor="Hand" ToolTip="Abrir la galería de fotos"
+                            MouseLeftButtonUp="FotoGrande_MouseLeftButtonUp">
                         <Border.Background>
                             <ImageBrush x:Name="FotoGrande" Stretch="UniformToFill"/>
                         </Border.Background>

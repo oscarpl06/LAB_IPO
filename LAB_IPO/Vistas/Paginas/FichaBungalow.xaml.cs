@@ -46,6 +46,16 @@ namespace LAB_IPO.Vistas.Paginas
                 (Window.GetWindow(this) as INavegador)?.Navegar(new FormularioBungalowVista(bungalow));
         }
 
+        // CU-13 · Abre la galería del bungalow (PG6); al navegar, la ventana cierra el panel lateral.
+        private void Galeria_Click(object sender, RoutedEventArgs e)
+        {
+            if (DataContext is Bungalow bungalow)
+                (Window.GetWindow(this) as INavegador)?.Navegar(new GaleriaBungalowVista(bungalow));
+        }
+
+        private void FotoGrande_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e) =>
+            Galeria_Click(sender, e);
+
         private void Cerrar_Click(object sender, RoutedEventArgs e)
         {
             (Window.GetWindow(this) as INavegador)?.CerrarPanelLateral();
