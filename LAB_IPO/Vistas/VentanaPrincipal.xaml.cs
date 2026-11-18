@@ -29,7 +29,20 @@ namespace LAB_IPO.Vistas
             InitializeComponent();
             MostrarUsuario();
             Navegar(new InicioVista());
+
+            // CU-29 · F1 abre en cualquier momento la ayuda de la pantalla actual.
+            InputBindings.Add(new KeyBinding(new ComandoSimple(AbrirAyudaContextual), Key.F1, ModifierKeys.None));
         }
+
+        // ===== Ayuda (CU-29) =====
+
+        private void AbrirAyudaContextual()
+        {
+            if (VistaActual is AyudaVista) return;
+            Navegar(new AyudaVista(VistaActual));
+        }
+
+        private void CentroAyuda_Click(object sender, RoutedEventArgs e) => AbrirAyudaContextual();
 
         private void MostrarUsuario()
         {
@@ -53,7 +66,10 @@ namespace LAB_IPO.Vistas
 
         public void Navegar(VistaBase vista)
         {
-            if (VistaActual != null && !VistaActual.PuedeSalir())
+            // Ayuda y Acerca de se abren por encima del trabajo en curso y permiten volver a él,
+            // así que no se pide confirmación al abrirlas.
+            bool haciaSecundaria = vista is VistaSecundaria;
+            if (VistaActual != null && !haciaSecundaria && !VistaActual.PuedeSalir())
             {
                 MarcarMenu(VistaActual.OpcionMenu);
                 return;
@@ -121,7 +137,7 @@ namespace LAB_IPO.Vistas
 
         private void MarcarMenu(string opcion)
         {
-            var boton = new[] { MenuInicio, MenuReservas, MenuPersonal, MenuActividades, MenuAlojamientos }
+            var boton = new[] { MenuInicio, MenuReservas, MenuPersonal, MenuActividades, MenuAlojamientos, MenuAyuda, MenuAcercaDe }
                 .FirstOrDefault(b => (string)b.Content == opcion);
             if (boton == null || boton.IsChecked == true) return;
 
@@ -141,6 +157,8 @@ namespace LAB_IPO.Vistas
                 case "Reservas": Navegar(new ReservasVista()); break;
                 case "Actividades": Navegar(new ActividadesVista()); break;
                 case "Personal": Navegar(new PersonalVista()); break;
+                case "Ayuda": Navegar(new AyudaVista(VistaActual)); break;
+                case "Acerca de": Navegar(new AcercaDeVista(VistaActual)); break;
                 default: Navegar(new InicioVista()); break;
             }
         }

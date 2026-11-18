@@ -87,13 +87,33 @@
                         <RadioButton x:Name="MenuAlojamientos" Style="{StaticResource Boton.Menu}" GroupName="Menu"
                                      Content="Alojamientos" ToolTip="Parcelas y bungalows del complejo"
                                      Checked="Menu_Checked" Click="Menu_Click"/>
-                        <RadioButton Style="{StaticResource Boton.Menu}" GroupName="Menu" Content="Ayuda"
-                                     IsEnabled="False" ToolTip="Sección en desarrollo"/>
-                        <RadioButton Style="{StaticResource Boton.Menu}" GroupName="Menu" Content="Acerca de"
-                                     IsEnabled="False" ToolTip="Sección en desarrollo"/>
+                        <RadioButton x:Name="MenuAyuda" Style="{StaticResource Boton.Menu}" GroupName="Menu"
+                                     Content="Ayuda" ToolTip="Centro de ayuda con instrucciones paso a paso (F1)"
+                                     Checked="Menu_Checked" Click="Menu_Click"/>
+                        <RadioButton x:Name="MenuAcercaDe" Style="{StaticResource Boton.Menu}" GroupName="Menu"
+                                     Content="Acerca de" ToolTip="Autores, versión y propósito de la aplicación"
+                                     Checked="Menu_Checked" Click="Menu_Click"/>
 
                         <Border Style="{StaticResource Separador}" Margin="0,12,0,16"/>
 
+                        <!-- CU-29 · Acceso directo a la ayuda de la pantalla actual -->
+                        <Button x:Name="BtnCentroAyuda" Cursor="Hand" FocusVisualStyle="{x:Null}"
+                                ToolTip="Abrir la ayuda de la pantalla en la que estás (F1)" Click="CentroAyuda_Click">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border x:Name="Fondo" CornerRadius="10" Background="Transparent" Padding="0,6">
+                                        <ContentPresenter/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="Fondo" Property="Background" Value="{StaticResource Pincel.Beige100}"/>
+                                        </Trigger>
+                                        <Trigger Property="IsKeyboardFocused" Value="True">
+                                            <Setter TargetName="Fondo" Property="Background" Value="{StaticResource Pincel.Beige100}"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Button.Template>
                         <StackPanel Orientation="Horizontal" Margin="4,0,0,0">
                             <Border Width="32" Height="32" CornerRadius="16" Background="{StaticResource Pincel.Salvia100}">
                                 <TextBlock Style="{StaticResource Icono}" Text="{StaticResource Icono.Ayuda}" FontSize="15"
@@ -105,6 +125,7 @@
                                 <TextBlock Text="F1 para consultar" Style="{StaticResource Texto.Nota}" FontSize="11"/>
                             </StackPanel>
                         </StackPanel>
+                        </Button>
                     </StackPanel>
                 </DockPanel>
             </Border>
