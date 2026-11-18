@@ -43,7 +43,26 @@ namespace LAB_IPO.Vistas.Paginas
         public AlojamientosVista(string mensajeGuardado, bool mostrarBungalows = false)
         {
             InitializeComponent();
-            ListaBungalows.ItemsSource = RepositorioAlojamientos.Bungalows;
+            _vistaBungalows = new ListCollectionView(RepositorioAlojamientos.Bungalows);
+            ListaBungalows.ItemsSource = _vistaBungalows;
+            CmbFiltroCapacidad.ItemsSource = new[]
+            {
+                new OpcionFiltro { Texto = "Cualquier capacidad" },
+                new OpcionFiltro { Texto = "Al menos 2 personas", Valor = 2 },
+                new OpcionFiltro { Texto = "Al menos 3 personas", Valor = 3 },
+                new OpcionFiltro { Texto = "Al menos 4 personas", Valor = 4 },
+                new OpcionFiltro { Texto = "Al menos 6 personas", Valor = 6 }
+            };
+            CmbFiltroEstadoBungalow.ItemsSource = new[]
+            {
+                new OpcionFiltro { Texto = "Todos los estados" },
+                new OpcionFiltro { Texto = "Libre", Valor = EstadoAlojamiento.Libre },
+                new OpcionFiltro { Texto = "Ocupado", Valor = EstadoAlojamiento.Ocupado },
+                new OpcionFiltro { Texto = "En reparación", Valor = EstadoAlojamiento.EnReparacion },
+                new OpcionFiltro { Texto = "Pendiente de limpieza", Valor = EstadoAlojamiento.PendienteLimpieza }
+            };
+            CmbFiltroCapacidad.SelectedIndex = 0;
+            CmbFiltroEstadoBungalow.SelectedIndex = 0;
 
             // Vista propia de la colección, para que los filtros no afecten a otras pantallas.
             _vista = new ListCollectionView(RepositorioAlojamientos.Parcelas);
@@ -101,6 +120,7 @@ namespace LAB_IPO.Vistas.Paginas
 
             // Los filtros y las tarifas son de parcelas; la consulta de bungalows llegará con el CU-10.
             GrupoFiltros.Visibility = bungalows ? Visibility.Collapsed : Visibility.Visible;
+            GrupoFiltrosBungalows.Visibility = bungalows ? Visibility.Visible : Visibility.Collapsed;
             BtnTiposTarifas.Visibility = bungalows ? Visibility.Collapsed : Visibility.Visible;
 
             TxtNuevo.Text = bungalows ? "Nuevo bungalow" : "Nueva parcela";
@@ -112,7 +132,7 @@ namespace LAB_IPO.Vistas.Paginas
                 : "Al eliminar una parcela se solicitará confirmación antes de borrar sus datos.";
 
             AvisoGuardado.Visibility = Visibility.Collapsed;
-            if (bungalows) CerrarFicha();
+            CerrarFicha();
             ActualizarRecuento();
         }
 
@@ -163,11 +183,14 @@ namespace LAB_IPO.Vistas.Paginas
         {
             if (MostrandoBungalows)
             {
-                int n = RepositorioAlojamientos.Bungalows.Count;
-                TxtRecuento.Text = n == 1 ? "1 bungalow en el complejo" : $"{n} bungalows en el complejo";
-                TxtPaginacion.Text = $"Mostrando {n} de {n} bungalows";
+                int visiblesB = _vistaBungalows.Count;
+                int totalB = RepositorioAlojamientos.Bungalows.Count;
+                TxtRecuento.Text = visiblesB == 1 ? "1 bungalow encontrado" : $"{visiblesB} bungalows encontrados";
+                TxtPaginacion.Text = $"Mostrando {visiblesB} de {totalB} bungalows";
+                PanelSinBungalows.Visibility = visiblesB == 0 ? Visibility.Visible : Visibility.Collapsed;
                 return;
             }
+            PanelSinBungalows.Visibility = Visibility.Collapsed;
 
             int visibles = _vista.Count;
             int total = RepositorioAlojamientos.Parcelas.Count;
@@ -236,6 +259,66 @@ namespace LAB_IPO.Vistas.Paginas
         {
             Navegador?.CerrarPanelLateral();
             QuitarResaltado();
+        }
+
+        // ===== Bungalows: filtros y ficha (CU-10) =====
+
+        private readonly ListCollectionView _vistaBungalows;
+
+        private void FiltrarBungalows_Click(object sender, RoutedEventArgs e) => AplicarFiltrosBungalows();
+
+        private void BuscarBungalow_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                AplicarFiltrosBungalows();
+                e.Handled = true;
+            }
+        }
+
+        private void LimpiarBungalows_Click(object sender, RoutedEventArgs e)
+        {
+            TxtBuscarBungalow.Clear();
+            CmbFiltroCapacidad.SelectedIndex = 0;
+            CmbFiltroEstadoBungalow.SelectedIndex = 0;
+            AplicarFiltrosBungalows();
+        }
+
+        private void AplicarFiltrosBungalows()
+        {
+            string texto = SinTildes(TxtBuscarBungalow.Text.Trim());
+            var capacidad = (CmbFiltroCapacidad.SelectedItem as OpcionFiltro)?.Valor as int?;
+            var estado = (CmbFiltroEstadoBungalow.SelectedItem as OpcionFiltro)?.Valor as EstadoAlojamiento?;
+
+            bool sinFiltros = texto.Length == 0 && capacidad == null && estado == null;
+            _vistaBungalows.Filter = sinFiltros ? null : new Predicate<object>(o =>
+            {
+                var b = (Bungalow)o;
+                if (capacidad != null && b.CapacidadMaxima < capacidad) return false;
+                if (estado != null && b.Estado != estado) return false;
+                if (texto.Length > 0
+                    && SinTildes(b.Nombre).IndexOf(texto, StringComparison.OrdinalIgnoreCase) < 0
+                    && SinTildes(b.Descripcion).IndexOf(texto, StringComparison.OrdinalIgnoreCase) < 0)
+                    return false;
+                return true;
+            });
+
+            ActualizarRecuento();
+        }
+
+        private void VerBungalow_Click(object sender, RoutedEventArgs e)
+        {
+            if (!((sender as FrameworkElement)?.DataContext is Bungalow bungalow)) return;
+
+            if (!RepositorioAlojamientos.Bungalows.Contains(bungalow))
+            {
+                DialogoMensaje.Mostrar(VentanaPropietaria, "Bungalow no disponible",
+                    "El bungalow seleccionado ya no existe. Actualiza el listado y vuelve a intentarlo.",
+                    TipoDialogo.Aviso);
+                return;
+            }
+
+            Navegador?.AbrirPanelLateral(new FichaBungalow(bungalow));
         }
 
         // ===== Alta (CU-03) =====

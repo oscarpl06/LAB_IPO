@@ -104,6 +104,44 @@
                 </Grid>
             </GroupBox>
 
+            <!-- Filtros de bungalows (CU-10) -->
+            <GroupBox x:Name="GrupoFiltrosBungalows" Style="{StaticResource Grupo}" Header="Filtros de búsqueda"
+                      Margin="0,12,0,0" Padding="20,10,20,14" Visibility="Collapsed">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="170"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="190"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Buscar" Style="{StaticResource Texto.Etiqueta}" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                    <TextBox x:Name="TxtBuscarBungalow" Grid.Column="1" Style="{StaticResource Campo.Texto}" Height="34"
+                             comp:CampoAyudante.TextoEjemplo="Nombre o descripción"
+                             ToolTip="Escribe parte del nombre (04) o de la descripción (chimenea) y pulsa Intro"
+                             KeyDown="BuscarBungalow_KeyDown"/>
+                    <TextBlock Grid.Column="2" Text="Capacidad" Style="{StaticResource Texto.Etiqueta}"
+                               VerticalAlignment="Center" Margin="18,0,10,0"/>
+                    <ComboBox x:Name="CmbFiltroCapacidad" Grid.Column="3" Style="{StaticResource Campo.Desplegable}"
+                              Height="34" DisplayMemberPath="Texto"
+                              ToolTip="Mostrar solo los bungalows con sitio para al menos ese número de personas"/>
+                    <TextBlock Grid.Column="4" Text="Estado" Style="{StaticResource Texto.Etiqueta}"
+                               VerticalAlignment="Center" Margin="18,0,10,0"/>
+                    <ComboBox x:Name="CmbFiltroEstadoBungalow" Grid.Column="5" Style="{StaticResource Campo.Desplegable}"
+                              Height="34" DisplayMemberPath="Texto"
+                              ToolTip="Mostrar solo los bungalows con un estado de disponibilidad"/>
+                    <Button x:Name="BtnFiltrarBungalows" Grid.Column="6" Style="{StaticResource Boton.SecundarioPequeno}"
+                            Content="Filtrar" Height="34" Margin="18,0,8,0"
+                            ToolTip="Aplicar los filtros a los bungalows" Click="FiltrarBungalows_Click"/>
+                    <Button x:Name="BtnLimpiarBungalows" Grid.Column="7" Style="{StaticResource Boton.SecundarioPequeno}"
+                            Content="Limpiar" Height="34"
+                            ToolTip="Quitar los filtros y mostrar todos los bungalows" Click="LimpiarBungalows_Click"/>
+                </Grid>
+            </GroupBox>
+
             <!-- Recuento y acciones -->
             <Grid Margin="0,16,0,10">
                 <TextBlock x:Name="TxtRecuento" Style="{StaticResource Texto.Secundario}" VerticalAlignment="Center"/>
@@ -221,7 +259,7 @@
                                         </StackPanel>
                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
                                             <Button Style="{StaticResource Boton.Fila}" Content="Ver" Margin="0,0,6,0"
-                                                    IsEnabled="False" ToolTip="Sección en desarrollo"/>
+                                                    ToolTip="Ver la ficha completa del bungalow" Click="VerBungalow_Click"/>
                                             <Button Style="{StaticResource Boton.Fila}" Content="Editar"
                                                     IsEnabled="False" ToolTip="Sección en desarrollo"/>
                                         </StackPanel>
@@ -233,6 +271,21 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </ScrollViewer>
+
+        <!-- Bungalows: sin resultados con los filtros -->
+        <StackPanel x:Name="PanelSinBungalows" VerticalAlignment="Center" HorizontalAlignment="Center"
+                    Visibility="Collapsed">
+            <Border Width="56" Height="56" CornerRadius="28" Background="{StaticResource Pincel.Salvia100}">
+                <TextBlock Style="{StaticResource Icono}" Text="&#xE721;" FontSize="22"
+                           Foreground="{StaticResource Pincel.Bosque700}"/>
+            </Border>
+            <TextBlock Style="{StaticResource Texto.Etiqueta}" FontSize="15" HorizontalAlignment="Center"
+                       Margin="0,14,0,4" Text="No hay bungalows que coincidan con los filtros"/>
+            <TextBlock Style="{StaticResource Texto.Nota}" HorizontalAlignment="Center"
+                       Text="Prueba con otra búsqueda o quita los filtros."/>
+            <Button Style="{StaticResource Boton.Enlace}" Content="Quitar filtros" HorizontalAlignment="Center"
+                    Margin="0,10,0,0" Click="LimpiarBungalows_Click"/>
+        </StackPanel>
 
         <!-- Tabla de parcelas + ficha lateral -->
         <Grid x:Name="PanelParcelas">
