@@ -90,6 +90,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Vistas\Paginas\FichaEmpleado.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Vistas\Paginas\FormularioParcelaVista.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -185,6 +189,10 @@
     </Compile>
     <Compile Include="Modelos\Empleado.cs" />
     <Compile Include="Datos\RepositorioPersonal.cs" />
+    <Compile Include="Vistas\Paginas\FichaEmpleado.xaml.cs">
+      <DependentUpon>FichaEmpleado.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Modelos\Parcela.cs" />
     <Compile Include="Modelos\TipoParcela.cs" />
     <Compile Include="Componentes\CampoAyudante.cs" />
