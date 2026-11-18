@@ -40,8 +40,9 @@ namespace LAB_IPO.Vistas.Paginas
 
         /// <param name="mensajeGuardado">Si se indica, muestra un aviso de confirmación sobre la tabla.</param>
         /// <param name="mostrarBungalows">Abre directamente la pestaña de bungalows.</param>
+        /// <param name="abrirFichaBungalow">Al volver de la galería (CU-13), reabre la ficha de destacarBungalow.</param>
         public AlojamientosVista(string mensajeGuardado, bool mostrarBungalows = false, Parcela destacar = null,
-                                 Bungalow destacarBungalow = null)
+                                 Bungalow destacarBungalow = null, bool abrirFichaBungalow = false)
         {
             InitializeComponent();
             _vistaBungalows = new ListCollectionView(RepositorioAlojamientos.Bungalows);
@@ -87,6 +88,15 @@ namespace LAB_IPO.Vistas.Paginas
 
             if (mostrarBungalows)
                 TabBungalows.IsChecked = true;
+
+            if (abrirFichaBungalow && destacarBungalow != null)
+                Loaded += (s, e) =>
+                {
+                    if (ListaBungalows.ItemContainerGenerator.ContainerFromItem(destacarBungalow) is FrameworkElement tarjeta)
+                        tarjeta.BringIntoView();
+                    if (RepositorioAlojamientos.Bungalows.Contains(destacarBungalow))
+                        Navegador?.AbrirPanelLateral(new FichaBungalow(destacarBungalow));
+                };
 
             if (!string.IsNullOrEmpty(mensajeGuardado))
             {

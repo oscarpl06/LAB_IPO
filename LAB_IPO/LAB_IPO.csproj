@@ -130,6 +130,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Vistas\Paginas\GaleriaBungalowVista.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Temas\Colores.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -221,6 +225,9 @@
     <Compile Include="Datos\RepositorioActividades.cs" />
     <Compile Include="Vistas\Paginas\FichaActividad.xaml.cs">
       <DependentUpon>FichaActividad.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Vistas\Paginas\GaleriaBungalowVista.xaml.cs">
+      <DependentUpon>GaleriaBungalowVista.xaml</DependentUpon>
     </Compile>
     <Compile Include="Componentes\RutaImagenConverter.cs" />
     <Compile Include="Componentes\VistaBase.cs" />
