@@ -132,7 +132,36 @@
                             <DockPanel>
                                 <TextBlock x:Name="IconoDisponibilidad" DockPanel.Dock="Left" Style="{StaticResource Icono}"
                                            FontSize="14" VerticalAlignment="Top" Margin="0,2,10,0"/>
-                                <TextBlock x:Name="TxtDisponibilidad" Style="{StaticResource Texto.Base}" TextWrapping="Wrap"/>
+                                <StackPanel>
+                                    <TextBlock x:Name="TxtDisponibilidad" Style="{StaticResource Texto.Base}" TextWrapping="Wrap"/>
+
+                                    <!-- Alternativas del mismo tipo libres en esas fechas -->
+                                    <StackPanel x:Name="PanelAlternativas" Margin="0,10,0,0" Visibility="Collapsed">
+                                        <TextBlock x:Name="TxtAlternativas" Style="{StaticResource Texto.Base}"
+                                                   FontWeight="SemiBold" Foreground="{StaticResource Pincel.TextoPrincipal}"
+                                                   TextWrapping="Wrap" Margin="0,0,0,8"/>
+                                        <ItemsControl x:Name="ListaAlternativas">
+                                            <ItemsControl.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <WrapPanel/>
+                                                </ItemsPanelTemplate>
+                                            </ItemsControl.ItemsPanel>
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Button Style="{StaticResource Boton.SecundarioPequeno}" Margin="0,0,8,8"
+                                                            Padding="12,0" Click="Alternativa_Click"
+                                                            ToolTip="Elegir este alojamiento y volver a comprobar la disponibilidad">
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <TextBlock Style="{StaticResource Icono}" Text="&#xE73E;" FontSize="11"
+                                                                       Foreground="{StaticResource Pincel.Bosque700}" Margin="0,0,8,0"/>
+                                                            <TextBlock Text="{Binding Texto}"/>
+                                                        </StackPanel>
+                                                    </Button>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </StackPanel>
+                                </StackPanel>
                             </DockPanel>
                         </Border>
                     </StackPanel>

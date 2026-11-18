@@ -82,7 +82,7 @@ namespace LAB_IPO.Vistas.Paginas
         }
 
         /// <summary>Elemento del desplegable de alojamientos (la plantilla muestra ToString()).</summary>
-        private class OpcionAlojamiento
+        public class OpcionAlojamiento
         {
             public object Alojamiento { get; set; }
             public string Texto { get; set; }
@@ -176,7 +176,52 @@ namespace LAB_IPO.Vistas.Paginas
 
             MostrarAviso("No disponible: " + motivo,
                 "Pincel.ErrorFondo", "Pincel.Error", "Pincel.Error", "Icono.Error");
+            MostrarAlternativas(entrada, salida);
             return false;
+        }
+
+        /// <summary>
+        /// Ofrece los alojamientos del mismo tipo que sí están libres en esas fechas para esos
+        /// ocupantes (capacidad y estancia mínima incluidas), o avisa de que no queda ninguno.
+        /// </summary>
+        private void MostrarAlternativas(DateTime entrada, DateTime salida)
+        {
+            int ocupantes = Adultos + Ninos;
+            var alternativas = ((IEnumerable<OpcionAlojamiento>)CmbAlojamiento.ItemsSource)
+                .Where(o => o.Alojamiento != AlojamientoElegido
+                            && RepositorioReservas.MotivoNoDisponible(o.Alojamiento, entrada, salida, ocupantes) == null)
+                .ToList();
+
+            bool bungalow = AlojamientoElegido is Bungalow;
+            string fechas = $"del {entrada:dd/MM/yyyy} al {salida:dd/MM/yyyy}";
+            string personas = $"{ocupantes} {(ocupantes == 1 ? "ocupante" : "ocupantes")}";
+
+            if (alternativas.Count == 0)
+            {
+                TxtAlternativas.Text = bungalow
+                    ? $"No hay ningún otro bungalow disponible {fechas} para {personas}."
+                    : $"No hay ninguna otra parcela disponible {fechas} para {personas}.";
+                ListaAlternativas.ItemsSource = null;
+            }
+            else
+            {
+                string tipo = bungalow
+                    ? (alternativas.Count == 1 ? "Este bungalow sí está libre" : "Estos bungalows sí están libres")
+                    : (alternativas.Count == 1 ? "Esta parcela sí está libre" : "Estas parcelas sí están libres");
+                TxtAlternativas.Text = $"{tipo} {fechas} para {personas}:";
+                ListaAlternativas.ItemsSource = alternativas;
+            }
+            PanelAlternativas.Visibility = Visibility.Visible;
+        }
+
+        // Elige la alternativa pulsada y comprueba de nuevo (debería salir disponible).
+        private void Alternativa_Click(object sender, RoutedEventArgs e)
+        {
+            if (!((sender as FrameworkElement)?.DataContext is OpcionAlojamiento opcion)) return;
+            CmbAlojamiento.SelectedItem = opcion;
+            ComprobarDisponibilidad();
+            PanelError.Visibility = Visibility.Hidden;
+            CmbAlojamiento.Focus();
         }
 
         private void MarcarPendiente()
@@ -187,6 +232,7 @@ namespace LAB_IPO.Vistas.Paginas
 
         private void MostrarAviso(string texto, string fondo, string borde, string color, string icono)
         {
+            PanelAlternativas.Visibility = Visibility.Collapsed;
             AvisoDisponibilidad.Background = (Brush)FindResource(fondo);
             AvisoDisponibilidad.BorderBrush = (Brush)FindResource(borde);
             TxtDisponibilidad.Text = texto;
