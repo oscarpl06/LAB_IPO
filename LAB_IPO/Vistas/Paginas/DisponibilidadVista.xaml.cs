@@ -239,6 +239,7 @@ namespace LAB_IPO.Vistas.Paginas
                 Margin = new Thickness(16, 0, 0, 0)
             };
             Cabecera.Children.Add(etiqueta);
+            AgregarGuias(Cabecera);
 
             for (int i = 0; i < DiasVisibles; i++)
             {
@@ -363,6 +364,9 @@ namespace LAB_IPO.Vistas.Paginas
                 inicioTramo = i;
             }
 
+            // Guías verticales entre días, por encima de los tramos.
+            AgregarGuias(rejilla);
+
             // Casillas pulsables, una por día.
             for (int i = 0; i < DiasVisibles; i++)
             {
@@ -390,6 +394,37 @@ namespace LAB_IPO.Vistas.Paginas
                 BorderThickness = new Thickness(0, 0, 0, 1),
                 Child = rejilla
             };
+        }
+
+        /// <summary>Líneas verticales finas en el borde izquierdo de cada día para seguir las columnas.</summary>
+        private void AgregarGuias(Grid rejilla)
+        {
+            var pincel = new SolidColorBrush(Color.FromArgb(0x26, 0x2B, 0x24, 0x18));
+            pincel.Freeze();
+            for (int i = 0; i < DiasVisibles; i++)
+            {
+                var guia = new Border
+                {
+                    Width = 1,
+                    Background = pincel,
+                    HorizontalAlignment = HorizontalAlignment.Left,
+                    IsHitTestVisible = false,
+                    SnapsToDevicePixels = true
+                };
+                Grid.SetColumn(guia, i + 1);
+                rejilla.Children.Add(guia);
+            }
+        }
+
+        // La barra de desplazamiento de las filas les quita ancho: la cabecera reserva
+        // el mismo hueco para que cada día quede encima de su columna.
+        private void PanelFilas_ScrollChanged(object sender, ScrollChangedEventArgs e)
+        {
+            double barra = PanelFilas.ComputedVerticalScrollBarVisibility == Visibility.Visible
+                ? PanelFilas.ActualWidth - PanelFilas.ViewportWidth
+                : 0;
+            var margen = new Thickness(0, 0, 10 + barra, 0);
+            if (Cabecera.Margin != margen) Cabecera.Margin = margen;
         }
 
         private Border CrearTramo(EstadoDia estado, int columna, int dias)

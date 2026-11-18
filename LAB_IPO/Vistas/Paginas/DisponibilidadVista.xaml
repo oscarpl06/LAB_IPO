@@ -159,7 +159,8 @@
                             <Grid x:Name="Cabecera" Height="46" Margin="0,0,10,0"/>
                         </Border>
                         <Grid>
-                            <ScrollViewer x:Name="PanelFilas" VerticalScrollBarVisibility="Auto" Focusable="False">
+                            <ScrollViewer x:Name="PanelFilas" VerticalScrollBarVisibility="Auto" Focusable="False"
+                                          ScrollChanged="PanelFilas_ScrollChanged">
                                 <StackPanel x:Name="Filas" Margin="0,2,10,6"/>
                             </ScrollViewer>
                             <TextBlock x:Name="TxtSinAlojamientos" Text="No hay alojamientos de este tipo."
