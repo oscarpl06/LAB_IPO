@@ -31,27 +31,36 @@ namespace LAB_IPO.Datos
                 (Parcela("P-15"), EstadoAlojamiento.EnReparacion, 0, 5)
             };
 
+        private const EstadoReserva C = EstadoReserva.Confirmada, P = EstadoReserva.Pendiente, X = EstadoReserva.Cancelada;
+
         private static ObservableCollection<Reserva> CrearReservas() => new ObservableCollection<Reserva>
         {
-            Nueva("R-0281", "Carmen Ruiz",      Parcela("P-06"),        -2, 5),
-            Nueva("R-0283", "Pablo Moreno",     Parcela("P-12"),         1, 5),
-            Nueva("R-0284", "Lucía Fernández",  Bungalow("Bungalow 04"), 0, 6),
-            Nueva("R-0291", "Marta Gil",        Bungalow("Bungalow 01"), -1, 3),
-            Nueva("R-0295", "Andrés Navarro",   Parcela("P-03"),         7, 12),
-            Nueva("R-0296", "Sofía Herrera",    Parcela("P-21"),         3, 6),
-            Nueva("R-0299", "Raúl Domínguez",   Bungalow("Bungalow 07"), 2, 9),
-            Nueva("R-0302", "Irene Castro",     Bungalow("Bungalow 02"), 4, 8),
-            Nueva("R-0305", "Familia Ortega",   Bungalow("Bungalow 01"), 6, 10),
-            Nueva("R-0308", "Nuria Vidal",      Parcela("P-15"),         9, 13)
+            Nueva("R-0280", "Elena Díaz",       Bungalow("Bungalow 07"), 12, 19, X, 3, 2, "622 418 905", "elena.diaz@correo.es"),
+            Nueva("R-0281", "Carmen Ruiz",      Parcela("P-06"),        -2, 5,  C, 2, 0, "654 210 778", "carmen.ruiz@correo.es"),
+            Nueva("R-0283", "Pablo Moreno",     Parcela("P-12"),         1, 5,  P, 2, 0, "611 904 332", null),
+            Nueva("R-0284", "Lucía Fernández",  Bungalow("Bungalow 04"), 0, 6,  C, 2, 2, "699 512 004, 958 220 431",
+                  "lucia.fdez@correo.es", "Cuna para un bebé de 10 meses."),
+            Nueva("R-0291", "Marta Gil",        Bungalow("Bungalow 01"), -1, 3, C, 2, 0, "633 781 120", "marta.gil@correo.es"),
+            Nueva("R-0295", "Andrés Navarro",   Parcela("P-03"),         7, 12, P, 2, 1, "677 345 902", null,
+                  "Llegamos con una autocaravana pequeña y un perro."),
+            Nueva("R-0296", "Sofía Herrera",    Parcela("P-21"),         3, 6,  C, 1, 0, "640 118 276", "sofia.herrera@correo.es"),
+            Nueva("R-0299", "Raúl Domínguez",   Bungalow("Bungalow 07"), 2, 9,  P, 4, 2, "615 993 410",
+                  "raul.dominguez@correo.es", "Necesitamos acceso para silla de ruedas."),
+            Nueva("R-0302", "Irene Castro",     Bungalow("Bungalow 02"), 4, 8,  C, 2, 1, "686 027 553", null),
+            Nueva("R-0305", "Familia Ortega",   Bungalow("Bungalow 01"), 6, 10, P, 2, 0, "622 760 198", "ortega.familia@correo.es"),
+            Nueva("R-0308", "Nuria Vidal",      Parcela("P-15"),         9, 13, C, 2, 2, "608 451 937", null)
         };
 
-        private static Reserva Nueva(string localizador, string titular, object alojamiento, int entrada, int salida) =>
+        private static Reserva Nueva(string localizador, string titular, object alojamiento, int entrada, int salida,
+                                     EstadoReserva estado, int adultos, int ninos, string telefonos, string correo,
+                                     string solicitudes = null) =>
             new Reserva
             {
                 Localizador = localizador, Titular = titular, Alojamiento = alojamiento,
                 Entrada = Hoy.AddDays(entrada), Salida = Hoy.AddDays(salida),
                 HoraLlegada = "16:00 - 18:00", HoraSalida = "Antes de 12:00",
-                Telefonos = "600 123 456", Adultos = 2
+                EstadoRegistrado = estado, Adultos = adultos, Ninos = ninos,
+                Telefonos = telefonos, Correo = correo, Solicitudes = solicitudes
             };
 
         /// <summary>Siguiente localizador libre con el formato R-NNNN.</summary>
@@ -129,7 +138,7 @@ namespace LAB_IPO.Datos
         public static EstadoDia EstadoEn(object alojamiento, DateTime fecha)
         {
             fecha = fecha.Date;
-            var reserva = Reservas.FirstOrDefault(r => r.Alojamiento == alojamiento && r.OcupaNoche(fecha));
+            var reserva = Reservas.FirstOrDefault(r => !r.Cancelada && r.Alojamiento == alojamiento && r.OcupaNoche(fecha));
             if (reserva != null)
                 return new EstadoDia { Estado = EstadoAlojamiento.Ocupado, Reserva = reserva };
 
@@ -146,7 +155,7 @@ namespace LAB_IPO.Datos
 
         /// <summary>Reservas de un alojamiento que coinciden con alguna noche del intervalo.</summary>
         public static List<Reserva> ReservasEntre(object alojamiento, DateTime desde, DateTime hasta) =>
-            Reservas.Where(r => r.Alojamiento == alojamiento && r.CoincideCon(desde, hasta))
+            Reservas.Where(r => !r.Cancelada && r.Alojamiento == alojamiento && r.CoincideCon(desde, hasta))
                     .OrderBy(r => r.Entrada)
                     .ToList();
     }

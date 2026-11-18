@@ -76,7 +76,7 @@
                                      Content="Inicio" IsChecked="True" ToolTip="Resumen del día en el camping"
                                      Checked="Menu_Checked" Click="Menu_Click"/>
                         <RadioButton x:Name="MenuReservas" Style="{StaticResource Boton.Menu}" GroupName="Menu"
-                                     Content="Reservas" ToolTip="Crear una reserva nueva"
+                                     Content="Reservas" ToolTip="Consultar y crear las reservas del camping"
                                      Checked="Menu_Checked" Click="Menu_Click"/>
                         <RadioButton x:Name="MenuPersonal" Style="{StaticResource Boton.Menu}" GroupName="Menu"
                                      Content="Personal" ToolTip="Empleados temporales, guías y monitores"

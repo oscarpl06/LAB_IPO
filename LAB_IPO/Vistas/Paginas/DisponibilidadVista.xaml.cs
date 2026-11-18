@@ -48,25 +48,6 @@ namespace LAB_IPO.Vistas.Paginas
             Dibujar();
         }
 
-        /// <summary>
-        /// Tras crear una reserva (CU-16): muestra el aviso, sitúa el calendario en su entrada
-        /// y deja seleccionada la casilla del primer día.
-        /// </summary>
-        public DisponibilidadVista(string mensajeGuardado, Reserva reserva) : this()
-        {
-            TxtAvisoGuardado.Text = mensajeGuardado;
-            AvisoGuardado.Visibility = Visibility.Visible;
-
-            _inicio = reserva.Entrada.Date;
-            Dibujar();
-            Seleccionar(reserva.Alojamiento, reserva.Entrada.Date);
-
-            // Lleva a la vista la fila de la reserva nueva.
-            Loaded += (s, e) => Dispatcher.BeginInvoke(new Action(() =>
-                _casillas.FirstOrDefault(c => c.IsChecked == true)?.BringIntoView()),
-                System.Windows.Threading.DispatcherPriority.Loaded);
-        }
-
         // ===== Filtro y navegación =====
 
         private void CmbTipo_SelectionChanged(object sender, SelectionChangedEventArgs e)

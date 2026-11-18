@@ -378,4 +378,43 @@
         </Style.Triggers>
     </Style>
 
+    <!-- Estado de una reserva (Pendiente, Confirmada, En estancia, Cancelada) -->
+    <Style x:Key="Chip.Reserva" TargetType="Border">
+        <Setter Property="CornerRadius" Value="11"/>
+        <Setter Property="Padding" Value="10,3"/>
+        <Setter Property="HorizontalAlignment" Value="Left"/>
+        <Setter Property="Background" Value="{StaticResource Pincel.AvisoFondo}"/>
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Estado}" Value="Confirmada">
+                <Setter Property="Background" Value="{StaticResource Pincel.Salvia100}"/>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding Estado}" Value="EnEstancia">
+                <Setter Property="Background" Value="#E3ECF2"/>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding Estado}" Value="Cancelada">
+                <Setter Property="Background" Value="{StaticResource Pincel.Arena200}"/>
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style x:Key="Chip.ReservaTexto" TargetType="TextBlock" BasedOn="{StaticResource Texto.Base}">
+        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="TextWrapping" Value="NoWrap"/>
+        <Setter Property="Text" Value="{Binding EstadoTexto}"/>
+        <Setter Property="Foreground" Value="{StaticResource Pincel.Aviso}"/>
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding Estado}" Value="Confirmada">
+                <Setter Property="Foreground" Value="{StaticResource Pincel.Bosque700}"/>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding Estado}" Value="EnEstancia">
+                <Setter Property="Foreground" Value="#2F5D7C"/>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding Estado}" Value="Cancelada">
+                <Setter Property="Foreground" Value="{StaticResource Pincel.TextoSecundario}"/>
+                <Setter Property="TextDecorations" Value="Strikethrough"/>
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+
 </ResourceDictionary>

@@ -399,7 +399,7 @@ namespace LAB_IPO.Vistas.Paginas
             RepositorioReservas.Agregar(reserva);
 
             _salidaConfirmada = true;
-            Navegar(new DisponibilidadVista(
+            Navegar(new ReservasVista(
                 $"Reserva {reserva.Localizador} creada para {reserva.NombreAlojamiento}, "
                 + $"del {entrada:dd/MM/yyyy} al {salida:dd/MM/yyyy}.", reserva));
         }
@@ -410,8 +410,7 @@ namespace LAB_IPO.Vistas.Paginas
         {
             if (!PuedeSalir()) return;
             _salidaConfirmada = true;
-            if (_desdeDisponibilidad) Navegar(new DisponibilidadVista());
-            else Navegar(new InicioVista());
+            Navegar(new ReservasVista());
         }
 
         private bool HayDatos =>

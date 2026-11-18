@@ -83,7 +83,7 @@
     </UserControl.Resources>
 
     <Grid>
-        <TextBox x:Name="CajaFecha" Style="{StaticResource Campo.Texto}" Padding="12,0,44,0"
+        <TextBox x:Name="CajaFecha" Style="{StaticResource Campo.Texto}" Padding="12,0,44,0" Height="Auto"
                  comp:CampoAyudante.TextoEjemplo="dd/mm/aaaa" MaxLength="10"
                  LostKeyboardFocus="CajaFecha_LostKeyboardFocus" PreviewKeyDown="CajaFecha_PreviewKeyDown"
                  TextChanged="CajaFecha_TextChanged"/>
