@@ -159,7 +159,7 @@
                                             </Grid.ColumnDefinitions>
 
                                             <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,10,0">
-                                                <TextBlock Text="{Binding Nombre}" Style="{StaticResource Texto.Base}"
+                                                <TextBlock Text="{Binding Nombre}" Style="{StaticResource Texto.Base}" ToolTip="{Binding Nombre}"
                                                            FontWeight="SemiBold" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap"/>
                                                 <TextBlock Text="{Binding PrecioTexto}" Style="{StaticResource Texto.Nota}" FontSize="12"/>
                                             </StackPanel>
@@ -184,11 +184,10 @@
                                                 <Button Style="{StaticResource Boton.Fila}" Content="Ver" Margin="0,0,6,0"
                                                         ToolTip="Ver todos los datos de la actividad" Click="Ver_Click"/>
                                                 <Button Style="{StaticResource Boton.Fila}" Content="Editar" Margin="0,0,6,0"
-                                                        IsEnabled="False" ToolTipService.ShowOnDisabled="True"
-                                                        ToolTip="Sección en desarrollo"/>
+                                                        ToolTip="Modificar los datos de la actividad" Click="Editar_Click"/>
                                                 <Button Style="{StaticResource Boton.Fila}" Content="Eliminar"
-                                                        IsEnabled="False" ToolTipService.ShowOnDisabled="True"
-                                                        ToolTip="Sección en desarrollo"/>
+                                                        ToolTip="Dar de baja la actividad (se pedirá confirmación)"
+                                                        Click="Eliminar_Click"/>
                                             </StackPanel>
                                         </Grid>
                                     </Border>

@@ -35,12 +35,12 @@
 
     <!-- CU-27 · Ficha de consulta de una actividad (RF-29), en el panel lateral de la ventana principal -->
     <DockPanel>
-        <!-- Pie: en consulta, la edición (llegará con su caso de uso); en gestión de monitores, Cancelar y Guardar -->
+        <!-- Pie: en consulta, la edición (CU-26); en gestión de monitores, Cancelar y Guardar -->
         <Border DockPanel.Dock="Bottom" BorderBrush="{StaticResource Pincel.Borde}" BorderThickness="0,1,0,0"
                 Padding="26,14">
             <Grid>
                 <Button x:Name="BtnEditarActividad" Style="{StaticResource Boton.Primario}" HorizontalAlignment="Stretch"
-                        IsEnabled="False" ToolTipService.ShowOnDisabled="True" ToolTip="Sección en desarrollo">
+                        ToolTip="Modificar los datos de esta actividad" Click="Editar_Click">
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Style="{StaticResource Icono}" Text="&#xE70F;" FontSize="14" Margin="0,0,8,0"
                                    Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}"/>

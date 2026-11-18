@@ -70,6 +70,12 @@ namespace LAB_IPO.Vistas.Paginas
             AvisoSinMonitores.Visibility = _actividad.TieneMonitores ? Visibility.Collapsed : Visibility.Visible;
         }
 
+        // CU-26 · Abre el formulario en modo edición; al navegar, la ventana cierra el panel lateral.
+        private void Editar_Click(object sender, RoutedEventArgs e)
+        {
+            (Window.GetWindow(this) as INavegador)?.Navegar(new FormularioActividadVista(_actividad));
+        }
+
         private void Cerrar_Click(object sender, RoutedEventArgs e)
         {
             (Window.GetWindow(this) as INavegador)?.CerrarPanelLateral();

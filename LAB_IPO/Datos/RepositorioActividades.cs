@@ -73,8 +73,18 @@ namespace LAB_IPO.Datos
         private static Empleado Monitor(string nombre, string apellidos) =>
             RepositorioPersonal.Empleados.First(e => e.Nombre == nombre && e.Apellidos == apellidos);
 
-        public static bool Existe(string nombre) =>
-            Actividades.Any(a => string.Equals(a.Nombre?.Trim(), nombre?.Trim(), StringComparison.OrdinalIgnoreCase));
+        /// <param name="excluir">Al modificar una actividad (CU-26), su propio nombre no cuenta como repetido.</param>
+        public static bool Existe(string nombre, Actividad excluir = null) =>
+            Actividades.Any(a => a != excluir
+                                 && string.Equals(a.Nombre?.Trim(), nombre?.Trim(), StringComparison.OrdinalIgnoreCase));
+
+        /// <summary>CU-25 · Da de baja la actividad: deja de aparecer en la gestión ordinaria.</summary>
+        public static void DarDeBaja(Actividad actividad)
+        {
+            if (actividad == null || !Actividades.Contains(actividad))
+                throw new InvalidOperationException("La actividad ya no existe.");
+            Actividades.Remove(actividad);
+        }
 
         public static void Agregar(Actividad actividad)
         {
