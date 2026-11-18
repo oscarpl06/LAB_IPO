@@ -1,0 +1,143 @@
+<UserControl x:Class="LAB_IPO.Componentes.CampoFecha"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:comp="clr-namespace:LAB_IPO.Componentes"
+             Height="40">
+
+    <!--
+        Campo de fecha reutilizable: se puede escribir (dd/mm/aaaa) o elegir en un
+        calendario desplegable con el estilo de la aplicación.
+    -->
+    <UserControl.Resources>
+        <!-- Botón pequeño y redondo (abrir calendario, mes anterior y siguiente) -->
+        <Style x:Key="Calendario.BotonIcono" TargetType="ButtonBase">
+            <Setter Property="Width" Value="32"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Focusable" Value="False"/>
+            <Setter Property="Foreground" Value="{StaticResource Pincel.Bosque700}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ButtonBase">
+                        <Border x:Name="Fondo" CornerRadius="8" Background="Transparent">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Fondo" Property="Background" Value="{StaticResource Pincel.Salvia100}"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Foreground" Value="{StaticResource Pincel.TextoTenue}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Día del calendario. Tag: Hoy, Seleccionado u Otro (día de otro mes) -->
+        <Style x:Key="Calendario.Dia" TargetType="Button">
+            <Setter Property="Width" Value="36"/>
+            <Setter Property="Height" Value="34"/>
+            <Setter Property="Margin" Value="1"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Focusable" Value="False"/>
+            <Setter Property="FontFamily" Value="{StaticResource Fuente.Texto}"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Foreground" Value="{StaticResource Pincel.TextoPrincipal}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Fondo" CornerRadius="17" Background="Transparent" BorderThickness="1"
+                                BorderBrush="Transparent">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Fondo" Property="Background" Value="{StaticResource Pincel.Salvia100}"/>
+                            </Trigger>
+                            <Trigger Property="Tag" Value="Otro">
+                                <Setter Property="Foreground" Value="{StaticResource Pincel.TextoTenue}"/>
+                            </Trigger>
+                            <Trigger Property="Tag" Value="Hoy">
+                                <Setter TargetName="Fondo" Property="BorderBrush" Value="{StaticResource Pincel.Bosque600}"/>
+                                <Setter Property="FontWeight" Value="SemiBold"/>
+                                <Setter Property="Foreground" Value="{StaticResource Pincel.Bosque700}"/>
+                            </Trigger>
+                            <Trigger Property="Tag" Value="Seleccionado">
+                                <Setter TargetName="Fondo" Property="Background" Value="{StaticResource Pincel.Bosque700}"/>
+                                <Setter Property="Foreground" Value="{StaticResource Pincel.Blanco}"/>
+                                <Setter Property="FontWeight" Value="SemiBold"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="Calendario.DiaSemana" TargetType="TextBlock" BasedOn="{StaticResource Texto.Nota}">
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Margin" Value="0,0,0,4"/>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid>
+        <TextBox x:Name="CajaFecha" Style="{StaticResource Campo.Texto}" Padding="12,0,44,0"
+                 comp:CampoAyudante.TextoEjemplo="dd/mm/aaaa" MaxLength="10"
+                 LostKeyboardFocus="CajaFecha_LostKeyboardFocus" PreviewKeyDown="CajaFecha_PreviewKeyDown"
+                 TextChanged="CajaFecha_TextChanged"/>
+
+        <ToggleButton x:Name="BtnCalendario" Style="{StaticResource Calendario.BotonIcono}"
+                      HorizontalAlignment="Right" Margin="0,0,4,0" ToolTip="Elegir la fecha en el calendario (Alt+↓)"
+                      Checked="BtnCalendario_Checked">
+            <TextBlock Style="{StaticResource Icono}" Text="&#xE787;" FontSize="15"
+                       Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=ToggleButton}}"/>
+        </ToggleButton>
+
+        <Popup x:Name="Desplegable" PlacementTarget="{Binding ElementName=CajaFecha}" Placement="Custom"
+               StaysOpen="False" AllowsTransparency="True" PopupAnimation="Fade"
+               Closed="Desplegable_Closed">
+            <Border Margin="8,6,12,12" Padding="14,12,14,10" Background="{StaticResource Pincel.Blanco}"
+                    BorderBrush="{StaticResource Pincel.Borde}" BorderThickness="1" CornerRadius="14"
+                    Effect="{StaticResource Sombra.Elevada}">
+                <StackPanel Width="266">
+                    <!-- Mes y navegación -->
+                    <Grid Margin="0,0,0,8">
+                        <TextBlock x:Name="TxtMes" Style="{StaticResource Texto.Base}" FontWeight="SemiBold" FontSize="15"
+                                   FontFamily="{StaticResource Fuente.Titulos}" VerticalAlignment="Center" Margin="6,0,0,0"/>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <Button x:Name="BtnMesAnterior" Style="{StaticResource Calendario.BotonIcono}"
+                                    ToolTip="Mes anterior" Click="MesAnterior_Click">
+                                <TextBlock Style="{StaticResource Icono}" Text="&#xE76B;" FontSize="12"
+                                           Foreground="{StaticResource Pincel.Bosque700}"/>
+                            </Button>
+                            <Button x:Name="BtnMesSiguiente" Style="{StaticResource Calendario.BotonIcono}"
+                                    ToolTip="Mes siguiente" Click="MesSiguiente_Click">
+                                <TextBlock Style="{StaticResource Icono}" Text="&#xE76C;" FontSize="12"
+                                           Foreground="{StaticResource Pincel.Bosque700}"/>
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Días de la semana (empieza en lunes) -->
+                    <UniformGrid Columns="7">
+                        <TextBlock Text="L" Style="{StaticResource Calendario.DiaSemana}"/>
+                        <TextBlock Text="M" Style="{StaticResource Calendario.DiaSemana}"/>
+                        <TextBlock Text="X" Style="{StaticResource Calendario.DiaSemana}"/>
+                        <TextBlock Text="J" Style="{StaticResource Calendario.DiaSemana}"/>
+                        <TextBlock Text="V" Style="{StaticResource Calendario.DiaSemana}"/>
+                        <TextBlock Text="S" Style="{StaticResource Calendario.DiaSemana}"/>
+                        <TextBlock Text="D" Style="{StaticResource Calendario.DiaSemana}"/>
+                    </UniformGrid>
+
+                    <UniformGrid x:Name="Dias" Columns="7" Rows="6"/>
+
+                    <Border Style="{StaticResource Separador}" Margin="0,8,0,6"/>
+                    <Button Style="{StaticResource Boton.Enlace}" Content="Hoy" HorizontalAlignment="Center"
+                            ToolTip="Elegir la fecha de hoy" Click="Hoy_Click"/>
+                </StackPanel>
+            </Border>
+        </Popup>
+    </Grid>
+</UserControl>

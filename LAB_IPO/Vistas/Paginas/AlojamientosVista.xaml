@@ -146,6 +146,15 @@
             <Grid Margin="0,16,0,10">
                 <TextBlock x:Name="TxtRecuento" Style="{StaticResource Texto.Secundario}" VerticalAlignment="Center"/>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button x:Name="BtnDisponibilidad" Style="{StaticResource Boton.Secundario}" MinWidth="170"
+                            Margin="0,0,12,0" ToolTip="Ver el calendario de disponibilidad de todos los alojamientos"
+                            Click="Disponibilidad_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Style="{StaticResource Icono}" Text="&#xE787;" FontSize="14" Margin="0,0,8,0"
+                                       Foreground="{StaticResource Pincel.Bosque800}"/>
+                            <TextBlock Text="Disponibilidad"/>
+                        </StackPanel>
+                    </Button>
                     <Button x:Name="BtnTiposTarifas" Style="{StaticResource Boton.Secundario}" Content="Tipos y tarifas" MinWidth="180"
                             IsEnabled="False" ToolTipService.ShowOnDisabled="True" ToolTip="Sección en desarrollo"
                             Margin="0,0,12,0"/>

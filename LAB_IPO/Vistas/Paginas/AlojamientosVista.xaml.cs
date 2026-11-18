@@ -327,6 +327,10 @@ namespace LAB_IPO.Vistas.Paginas
             Navegador?.AbrirPanelLateral(new FichaBungalow(bungalow));
         }
 
+        // ===== Disponibilidad (CU-14) =====
+
+        private void Disponibilidad_Click(object sender, RoutedEventArgs e) => Navegar(new DisponibilidadVista());
+
         // ===== Modificar bungalow (CU-09) =====
 
         private void EditarBungalow_Click(object sender, RoutedEventArgs e)
