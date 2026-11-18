@@ -98,6 +98,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Componentes\CampoFecha.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Vistas\Paginas\DisponibilidadVista.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Temas\Colores.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -162,6 +170,14 @@
       <DependentUpon>FormularioParcelaVista.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Componentes\CampoFecha.xaml.cs">
+      <DependentUpon>CampoFecha.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Vistas\Paginas\DisponibilidadVista.xaml.cs">
+      <DependentUpon>DisponibilidadVista.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Modelos\Reserva.cs" />
+    <Compile Include="Datos\RepositorioReservas.cs" />
     <Compile Include="Componentes\RutaImagenConverter.cs" />
     <Compile Include="Componentes\VistaBase.cs" />
     <Compile Include="Datos\RepositorioAlojamientos.cs" />
