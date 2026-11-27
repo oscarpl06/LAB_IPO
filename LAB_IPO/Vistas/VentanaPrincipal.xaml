@@ -65,7 +65,7 @@
             <!-- Menú lateral -->
             <Border Grid.Column="0" Style="{StaticResource Tarjeta}" Padding="12,16,12,14">
                 <DockPanel>
-                    <TextBlock DockPanel.Dock="Bottom" Text="Versión 0.1.0  |  2026"
+                    <TextBlock DockPanel.Dock="Bottom" Text="Versión 2.0.0  |  2026"
                                Style="{StaticResource Texto.Nota}" FontSize="11" Margin="4,0,0,0"/>
 
                     <StackPanel>
