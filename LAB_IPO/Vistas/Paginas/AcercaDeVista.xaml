@@ -72,7 +72,7 @@
                         </StackPanel>
                         <StackPanel Style="{StaticResource Dato.Fila}">
                             <TextBlock Text="Versión" Style="{StaticResource Dato.Etiqueta}"/>
-                            <TextBlock Style="{StaticResource Dato.Valor}" Text="0.1.0 · Prototipo de alta fidelidad (WPF)"/>
+                            <TextBlock Style="{StaticResource Dato.Valor}" Text="2.0.0 · Prototipo de alta fidelidad (WPF)"/>
                         </StackPanel>
                         <StackPanel Style="{StaticResource Dato.Fila}" Margin="0">
                             <TextBlock Text="Uso" Style="{StaticResource Dato.Etiqueta}"/>

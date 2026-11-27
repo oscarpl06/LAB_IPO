@@ -3,10 +3,344 @@
                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                 xmlns:comp="clr-namespace:LAB_IPO.Componentes">
 
-    <!-- PG2 · Inicio. El resumen del día llegará con los casos de uso de reservas. -->
-    <StackPanel>
-        <TextBlock Text="Inicio" Style="{StaticResource Texto.TituloSeccion}"/>
-        <TextBlock x:Name="TxtBienvenida" Style="{StaticResource Texto.Secundario}" Margin="0,6,0,0"/>
-        <Border Style="{StaticResource Separador}" Margin="0,14,0,0"/>
-    </StackPanel>
+    <comp:VistaBase.Resources>
+        <!-- Tarjeta con una cifra del día: se pulsa para ir a la pantalla que la detalla -->
+        <Style x:Key="Boton.Indicador" TargetType="Button" BasedOn="{StaticResource Boton.Base}">
+            <Setter Property="Height" Value="Auto"/>
+            <Setter Property="FontWeight" Value="Normal"/>
+            <Setter Property="Padding" Value="18,16"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Marco" Style="{StaticResource Tarjeta}" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Marco" Property="BorderBrush" Value="{StaticResource Pincel.Bosque500}"/>
+                                <Setter TargetName="Marco" Property="Background" Value="{StaticResource Pincel.BlancoCalido}"/>
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="Marco" Property="BorderBrush" Value="{StaticResource Pincel.Bosque600}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Marco" Property="Background" Value="{StaticResource Pincel.Salvia100}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="Indicador.Icono" TargetType="Border">
+            <Setter Property="Width" Value="40"/>
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="CornerRadius" Value="20"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="Background" Value="{StaticResource Pincel.Salvia100}"/>
+        </Style>
+
+        <Style x:Key="Indicador.Cifra" TargetType="TextBlock" BasedOn="{StaticResource Texto.Display}">
+            <Setter Property="FontSize" Value="30"/>
+            <Setter Property="Margin" Value="0,10,0,0"/>
+        </Style>
+
+        <Style x:Key="Indicador.Detalle" TargetType="TextBlock" BasedOn="{StaticResource Texto.Nota}">
+            <Setter Property="Margin" Value="0,2,0,0"/>
+            <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+        </Style>
+
+        <!-- Fila de una lista del día: se pulsa para abrir su ficha en el panel lateral -->
+        <Style x:Key="Boton.FilaResumen" TargetType="Button" BasedOn="{StaticResource Boton.Base}">
+            <Setter Property="Height" Value="Auto"/>
+            <Setter Property="FontWeight" Value="Normal"/>
+            <Setter Property="Padding" Value="16,10"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Fila" Background="Transparent" BorderBrush="{StaticResource Pincel.Borde}"
+                                BorderThickness="0,0,0,1" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Fila" Property="Background" Value="{StaticResource Pincel.BlancoCalido}"/>
+                            </Trigger>
+                            <Trigger Property="IsKeyboardFocused" Value="True">
+                                <Setter TargetName="Fila" Property="Background" Value="{StaticResource Pincel.Salvia100}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="Cabecera.Lista" TargetType="Border">
+            <Setter Property="DockPanel.Dock" Value="Top"/>
+            <Setter Property="Padding" Value="16,14,16,10"/>
+            <Setter Property="BorderBrush" Value="{StaticResource Pincel.Borde}"/>
+            <Setter Property="BorderThickness" Value="0,0,0,1"/>
+        </Style>
+
+        <Style x:Key="Texto.ListaVacia" TargetType="TextBlock" BasedOn="{StaticResource Texto.Nota}">
+            <Setter Property="Visibility" Value="Collapsed"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="16"/>
+        </Style>
+    </comp:VistaBase.Resources>
+
+    <!-- PG2 · Inicio: resumen del día del camping -->
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Focusable="False">
+        <StackPanel Margin="0,0,6,4">
+            <TextBlock Text="Inicio" Style="{StaticResource Texto.TituloSeccion}"/>
+            <TextBlock x:Name="TxtBienvenida" Style="{StaticResource Texto.Secundario}" Margin="0,6,0,0"/>
+            <Border Style="{StaticResource Separador}" Margin="0,14,0,16"/>
+
+            <!-- Cifras del día -->
+            <UniformGrid Columns="4" Margin="-6,0">
+                <Button Style="{StaticResource Boton.Indicador}" Margin="6,0"
+                        ToolTip="Ir al listado de reservas" Click="IrReservas_Click">
+                    <StackPanel>
+                        <Border Style="{StaticResource Indicador.Icono}">
+                            <TextBlock Style="{StaticResource Icono}" Text="&#xE896;" Foreground="{StaticResource Pincel.Bosque700}"/>
+                        </Border>
+                        <TextBlock x:Name="TxtNumLlegadas" Style="{StaticResource Indicador.Cifra}"/>
+                        <TextBlock Text="Llegadas hoy" Style="{StaticResource Texto.Etiqueta}"/>
+                        <TextBlock x:Name="TxtDetalleLlegadas" Style="{StaticResource Indicador.Detalle}"/>
+                    </StackPanel>
+                </Button>
+
+                <Button Style="{StaticResource Boton.Indicador}" Margin="6,0"
+                        ToolTip="Ir al listado de reservas" Click="IrReservas_Click">
+                    <StackPanel>
+                        <Border Style="{StaticResource Indicador.Icono}">
+                            <TextBlock Style="{StaticResource Icono}" Text="&#xE898;" Foreground="{StaticResource Pincel.Bosque700}"/>
+                        </Border>
+                        <TextBlock x:Name="TxtNumSalidas" Style="{StaticResource Indicador.Cifra}"/>
+                        <TextBlock Text="Salidas hoy" Style="{StaticResource Texto.Etiqueta}"/>
+                        <TextBlock x:Name="TxtDetalleSalidas" Style="{StaticResource Indicador.Detalle}"/>
+                    </StackPanel>
+                </Button>
+
+                <Button Style="{StaticResource Boton.Indicador}" Margin="6,0"
+                        ToolTip="Ver la disponibilidad de los alojamientos día a día" Click="IrDisponibilidad_Click">
+                    <StackPanel>
+                        <Border Style="{StaticResource Indicador.Icono}">
+                            <TextBlock Style="{StaticResource Icono}" Text="&#xE80F;" Foreground="{StaticResource Pincel.Bosque700}"/>
+                        </Border>
+                        <TextBlock Style="{StaticResource Indicador.Cifra}">
+                            <Run x:Name="RunOcupados"/><Run x:Name="RunTotal" FontSize="18"
+                                 Foreground="{StaticResource Pincel.TextoTenue}"/>
+                        </TextBlock>
+                        <TextBlock Text="Ocupación esta noche" Style="{StaticResource Texto.Etiqueta}"/>
+                        <Border Background="{StaticResource Pincel.Beige100}" CornerRadius="3" Height="6" Margin="0,8,0,0"
+                                ClipToBounds="True">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition x:Name="ColOcupados" Width="0*"/>
+                                    <ColumnDefinition x:Name="ColLibres" Width="1*"/>
+                                </Grid.ColumnDefinitions>
+                                <Border Background="{StaticResource Pincel.Bosque600}" CornerRadius="3"/>
+                            </Grid>
+                        </Border>
+                        <TextBlock x:Name="TxtDetalleOcupacion" Style="{StaticResource Indicador.Detalle}" Margin="0,6,0,0"/>
+                    </StackPanel>
+                </Button>
+
+                <Button Style="{StaticResource Boton.Indicador}" Margin="6,0"
+                        ToolTip="Ir a la gestión de alojamientos" Click="IrAlojamientos_Click">
+                    <StackPanel>
+                        <Border x:Name="FondoIconoAtencion" Style="{StaticResource Indicador.Icono}">
+                            <TextBlock x:Name="IconoAtencion" Style="{StaticResource Icono}"
+                                       Foreground="{StaticResource Pincel.Bosque700}"/>
+                        </Border>
+                        <TextBlock x:Name="TxtNumAtencion" Style="{StaticResource Indicador.Cifra}"/>
+                        <TextBlock Text="Alojamientos por atender" Style="{StaticResource Texto.Etiqueta}"/>
+                        <TextBlock x:Name="TxtDetalleAtencion" Style="{StaticResource Indicador.Detalle}"/>
+                    </StackPanel>
+                </Button>
+            </UniformGrid>
+
+            <!-- Llegadas y salidas de hoy -->
+            <Grid Margin="0,16,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="16"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Border Style="{StaticResource Tarjeta}">
+                    <DockPanel>
+                        <Border Style="{StaticResource Cabecera.Lista}">
+                            <TextBlock Text="LLEGADAS DE HOY" Style="{StaticResource Texto.Rotulo}"/>
+                        </Border>
+                        <Grid MinHeight="96">
+                            <ItemsControl x:Name="ListaLlegadas" Focusable="False">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Button Style="{StaticResource Boton.FilaResumen}" Click="VerReserva_Click"
+                                                ToolTip="Ver los datos de la reserva y del alojamiento">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel>
+                                                    <TextBlock Style="{StaticResource Texto.Base}" FontWeight="SemiBold"
+                                                               TextTrimming="CharacterEllipsis">
+                                                        <Run Text="{Binding Titular, Mode=OneWay}"/>
+                                                        <Run Text="{Binding Localizador, Mode=OneWay, StringFormat='· {0}'}"
+                                                             FontWeight="Normal" Foreground="{StaticResource Pincel.TextoTenue}"/>
+                                                    </TextBlock>
+                                                    <TextBlock Style="{StaticResource Texto.Nota}" Margin="0,2,0,0"
+                                                               TextTrimming="CharacterEllipsis">
+                                                        <Run Text="{Binding NombreAlojamiento, Mode=OneWay}"/>
+                                                        <Run Text="{Binding OcupantesTexto, Mode=OneWay, StringFormat='· {0}'}"/>
+                                                    </TextBlock>
+                                                </StackPanel>
+                                                <TextBlock Grid.Column="1" Text="{Binding HoraLlegada}" Style="{StaticResource Texto.Nota}"
+                                                           VerticalAlignment="Center" Margin="10,0,0,0"/>
+                                            </Grid>
+                                        </Button>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            <TextBlock x:Name="TxtSinLlegadas" Style="{StaticResource Texto.ListaVacia}"
+                                       Text="Hoy no hay llegadas previstas."/>
+                        </Grid>
+                    </DockPanel>
+                </Border>
+
+                <Border Grid.Column="2" Style="{StaticResource Tarjeta}">
+                    <DockPanel>
+                        <Border Style="{StaticResource Cabecera.Lista}">
+                            <TextBlock Text="SALIDAS DE HOY" Style="{StaticResource Texto.Rotulo}"/>
+                        </Border>
+                        <Grid MinHeight="96">
+                            <ItemsControl x:Name="ListaSalidas" Focusable="False">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Button Style="{StaticResource Boton.FilaResumen}" Click="VerReserva_Click"
+                                                ToolTip="Ver los datos de la reserva y del alojamiento">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <StackPanel>
+                                                    <TextBlock Style="{StaticResource Texto.Base}" FontWeight="SemiBold"
+                                                               TextTrimming="CharacterEllipsis">
+                                                        <Run Text="{Binding Titular, Mode=OneWay}"/>
+                                                        <Run Text="{Binding Localizador, Mode=OneWay, StringFormat='· {0}'}"
+                                                             FontWeight="Normal" Foreground="{StaticResource Pincel.TextoTenue}"/>
+                                                    </TextBlock>
+                                                    <TextBlock Style="{StaticResource Texto.Nota}" Margin="0,2,0,0"
+                                                               TextTrimming="CharacterEllipsis">
+                                                        <Run Text="{Binding NombreAlojamiento, Mode=OneWay}"/>
+                                                        <Run Text="{Binding NochesTexto, Mode=OneWay, StringFormat='· {0}'}"/>
+                                                    </TextBlock>
+                                                </StackPanel>
+                                                <TextBlock Grid.Column="1" Text="{Binding HoraSalida}" Style="{StaticResource Texto.Nota}"
+                                                           VerticalAlignment="Center" Margin="10,0,0,0"/>
+                                            </Grid>
+                                        </Button>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            <TextBlock x:Name="TxtSinSalidas" Style="{StaticResource Texto.ListaVacia}"
+                                       Text="Hoy no hay salidas previstas."/>
+                        </Grid>
+                    </DockPanel>
+                </Border>
+            </Grid>
+
+            <!-- Actividades de hoy y accesos rápidos -->
+            <Grid Margin="0,16,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="16"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Border Style="{StaticResource Tarjeta}">
+                    <DockPanel>
+                        <Border Style="{StaticResource Cabecera.Lista}">
+                            <TextBlock Text="ACTIVIDADES DE HOY" Style="{StaticResource Texto.Rotulo}"/>
+                        </Border>
+                        <Grid MinHeight="96">
+                            <ItemsControl x:Name="ListaActividades" Focusable="False">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Button Style="{StaticResource Boton.FilaResumen}" Click="VerActividad_Click"
+                                                ToolTip="Ver la ficha de la actividad">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="100"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="{Binding HorarioTexto}" Style="{StaticResource Texto.Base}"
+                                                           FontWeight="SemiBold" Foreground="{StaticResource Pincel.Bosque800}"
+                                                           VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="1">
+                                                    <TextBlock Text="{Binding Nombre}" Style="{StaticResource Texto.Base}"
+                                                               FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
+                                                    <TextBlock Style="{StaticResource Texto.Nota}" Margin="0,2,0,0"
+                                                               TextTrimming="CharacterEllipsis">
+                                                        <Run Text="{Binding Area, Mode=OneWay}"/>
+                                                        <Run Text="{Binding Publico, Mode=OneWay, StringFormat='· {0}'}"/>
+                                                    </TextBlock>
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center"
+                                                            Margin="10,0,0,0">
+                                                    <TextBlock Style="{StaticResource Icono}" Text="{StaticResource Icono.Usuario}"
+                                                               FontSize="12" Foreground="{StaticResource Pincel.TextoSecundario}"
+                                                               Margin="0,0,6,0"/>
+                                                    <TextBlock Text="{Binding MonitoresTexto}" Style="{StaticResource Texto.Nota}"
+                                                               VerticalAlignment="Center"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Button>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            <TextBlock x:Name="TxtSinActividades" Style="{StaticResource Texto.ListaVacia}"
+                                       Text="Hoy no hay actividades programadas."/>
+                        </Grid>
+                    </DockPanel>
+                </Border>
+
+                <Border Grid.Column="2" Style="{StaticResource Tarjeta}" Padding="16,14,16,16" VerticalAlignment="Top">
+                    <StackPanel>
+                        <TextBlock Text="ACCESOS RÁPIDOS" Style="{StaticResource Texto.Rotulo}" Margin="0,0,0,12"/>
+                        <Button Style="{StaticResource Boton.Primario}" ToolTip="Registrar una reserva nueva"
+                                Click="NuevaReserva_Click">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource Icono}" Text="&#xE710;" FontSize="13" Margin="0,0,10,0"
+                                           Foreground="{StaticResource Pincel.Blanco}"/>
+                                <TextBlock Text="Nueva reserva"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Style="{StaticResource Boton.Secundario}" Margin="0,8,0,0"
+                                ToolTip="Consultar qué alojamientos están libres cada día" Click="IrDisponibilidad_Click">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource Icono}" Text="&#xE787;" FontSize="13" Margin="0,0,10,0"/>
+                                <TextBlock Text="Ver disponibilidad"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Style="{StaticResource Boton.Secundario}" Margin="0,8,0,0"
+                                ToolTip="Buscar una reserva por titular, localizador o teléfono" Click="BuscarReserva_Click">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Style="{StaticResource Icono}" Text="&#xE721;" FontSize="13" Margin="0,0,10,0"/>
+                                <TextBlock Text="Buscar reserva"/>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </StackPanel>
+    </ScrollViewer>
 </comp:VistaBase>
